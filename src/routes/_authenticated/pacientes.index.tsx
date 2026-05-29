@@ -9,7 +9,7 @@ import { Plus, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/_authenticated/pacientes")({
+export const Route = createFileRoute("/_authenticated/pacientes/")({
   head: () => ({ meta: [{ title: "Pacientes — Historias Clínicas" }] }),
   component: PacientesIndex,
 });
