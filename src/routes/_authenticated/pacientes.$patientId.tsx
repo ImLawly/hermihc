@@ -73,7 +73,7 @@ function PatientDetail() {
   });
 
   const updateLocation = useMutation({
-    mutationFn: async (vals: { current_location: string; current_bed: string | null }) => {
+    mutationFn: async (vals: { current_location: "emergencia" | "hospitalizacion" | "consulta_externa"; current_bed: string | null }) => {
       const { error } = await supabase.from("patients").update(vals).eq("id", patientId);
       if (error) throw error;
     },
