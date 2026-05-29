@@ -52,9 +52,11 @@ function PacientesIndex() {
           <p className="text-sm text-muted-foreground">Historias activas y archivadas de tu servicio.</p>
         </div>
         {auth.isMedical && (
-          <Link to="/pacientes/nuevo">
-            <Button><Plus className="w-4 h-4 mr-1" /> Nuevo ingreso</Button>
-          </Link>
+          <Button asChild>
+            <Link to="/pacientes/nuevo">
+              <Plus className="w-4 h-4 mr-1" /> Nuevo ingreso
+            </Link>
+          </Button>
         )}
       </div>
 
