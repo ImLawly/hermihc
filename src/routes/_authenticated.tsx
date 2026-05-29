@@ -117,5 +117,6 @@ function AuthenticatedLayout() {
         <Outlet />
       </main>
     </div>
+    </SyncProvider>
   );
 }
