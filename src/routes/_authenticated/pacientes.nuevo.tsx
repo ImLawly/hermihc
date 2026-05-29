@@ -90,7 +90,7 @@ function NuevoPaciente() {
           <div>
             <Label>Servicio</Label>
             <select className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm"
-              value={form.service} onChange={e => setForm({ ...form, service: e.target.value })}>
+              value={form.service} onChange={e => setForm({ ...form, service: e.target.value as typeof form.service })}>
               {auth.services.map(s => <option key={s} value={s}>{SERVICE_LABELS[s]}</option>)}
               {auth.services.length === 0 && <option value="obstetricia">Obstetricia</option>}
             </select>
