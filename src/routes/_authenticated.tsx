@@ -4,6 +4,7 @@ import { useAuth, SERVICE_LABELS, ROLE_LABELS } from "@/hooks/useAuth";
 import { Stethoscope, LogOut, Users, ShieldAlert, Bell, Menu } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { OnlineStatus } from "@/components/OnlineStatus";
 
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async () => {
