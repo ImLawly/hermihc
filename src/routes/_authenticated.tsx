@@ -5,6 +5,9 @@ import { Stethoscope, LogOut, Users, ShieldAlert, Bell, Menu } from "lucide-reac
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { OnlineStatus } from "@/components/OnlineStatus";
+import { NotificationBell } from "@/components/NotificationBell";
+import { PushToggle } from "@/components/PushToggle";
+import { SyncProvider } from "@/lib/offline/SyncProvider";
 
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async () => {
@@ -48,6 +51,7 @@ function AuthenticatedLayout() {
   ].filter(n => n.show);
 
   return (
+    <SyncProvider>
     <div className="min-h-screen flex flex-col bg-background">
       <header className="sticky top-0 z-30 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center gap-3">
@@ -71,8 +75,10 @@ function AuthenticatedLayout() {
             ))}
           </nav>
 
-          <div className="ml-auto flex items-center gap-3">
+          <div className="ml-auto flex items-center gap-2 sm:gap-3">
             <OnlineStatus />
+            <NotificationBell />
+            <PushToggle />
             <div className="hidden sm:flex flex-col items-end text-right leading-tight">
               <span className="text-xs font-semibold">{auth.profile?.full_name}</span>
               <span className="text-[10px] text-muted-foreground">
@@ -111,5 +117,6 @@ function AuthenticatedLayout() {
         <Outlet />
       </main>
     </div>
+    </SyncProvider>
   );
 }
