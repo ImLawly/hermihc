@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { BellRing, BellOff } from "lucide-react";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { getRegistration } from "@/lib/offline/registerSW";
 import { useAuth } from "@/hooks/useAuth";
+import { getVapidPublicKey } from "@/lib/push.functions";
 
 function urlBase64ToUint8Array(base64String: string) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
