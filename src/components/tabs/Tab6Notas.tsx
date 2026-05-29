@@ -135,12 +135,13 @@ function NewOperative({ admissionId, onSaved }: { admissionId: string; onSaved: 
   });
   const save = useMutation({
     mutationFn: async () => {
+      const { surgery_at, rn_peso, rn_talla, ...rest } = f;
       const { error } = await supabase.from("operative_notes").insert({
         admission_id: admissionId,
-        surgery_at: new Date(f.surgery_at).toISOString(),
-        ...f,
-        rn_peso: f.rn_peso ? Number(f.rn_peso) : null,
-        rn_talla: f.rn_talla ? Number(f.rn_talla) : null,
+        surgery_at: new Date(surgery_at).toISOString(),
+        ...rest,
+        rn_peso: rn_peso ? Number(rn_peso) : null,
+        rn_talla: rn_talla ? Number(rn_talla) : null,
         created_by: auth.user!.id,
       } as any);
       if (error) throw error;
