@@ -30,7 +30,8 @@ export async function drain(qc?: QueryClient) {
       try {
         // dynamic-typed by design; we're hitting arbitrary tables.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let q: any = supabase.from(item.table);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let q: any = (supabase as any).from(item.table);
         if (item.op === "insert") {
           const { error } = await q.insert(item.payload);
           if (error) throw error;
