@@ -5,6 +5,9 @@ import { Stethoscope, LogOut, Users, ShieldAlert, Bell, Menu } from "lucide-reac
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { OnlineStatus } from "@/components/OnlineStatus";
+import { NotificationBell } from "@/components/NotificationBell";
+import { PushToggle } from "@/components/PushToggle";
+import { SyncProvider } from "@/lib/offline/SyncProvider";
 
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async () => {
