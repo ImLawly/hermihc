@@ -11,7 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedPacientesRouteImport } from './routes/_authenticated/pacientes'
+import { Route as AuthenticatedPacientesNuevoRouteImport } from './routes/_authenticated/pacientes.nuevo'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -23,38 +26,68 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedPacientesRoute = AuthenticatedPacientesRouteImport.update({
+  id: '/pacientes',
+  path: '/pacientes',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedPacientesNuevoRoute =
+  AuthenticatedPacientesNuevoRouteImport.update({
+    id: '/nuevo',
+    path: '/nuevo',
+    getParentRoute: () => AuthenticatedPacientesRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/pacientes': typeof AuthenticatedPacientesRouteWithChildren
+  '/pacientes/nuevo': typeof AuthenticatedPacientesNuevoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/pacientes': typeof AuthenticatedPacientesRouteWithChildren
+  '/pacientes/nuevo': typeof AuthenticatedPacientesNuevoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/_authenticated/pacientes': typeof AuthenticatedPacientesRouteWithChildren
+  '/_authenticated/pacientes/nuevo': typeof AuthenticatedPacientesNuevoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/signup'
+  fullPaths: '/' | '/login' | '/signup' | '/pacientes' | '/pacientes/nuevo'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/signup'
-  id: '__root__' | '/' | '/login' | '/signup'
+  to: '/' | '/login' | '/signup' | '/pacientes' | '/pacientes/nuevo'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/login'
+    | '/signup'
+    | '/_authenticated/pacientes'
+    | '/_authenticated/pacientes/nuevo'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
 }
@@ -75,6 +108,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -82,14 +122,65 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/pacientes': {
+      id: '/_authenticated/pacientes'
+      path: '/pacientes'
+      fullPath: '/pacientes'
+      preLoaderRoute: typeof AuthenticatedPacientesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/pacientes/nuevo': {
+      id: '/_authenticated/pacientes/nuevo'
+      path: '/nuevo'
+      fullPath: '/pacientes/nuevo'
+      preLoaderRoute: typeof AuthenticatedPacientesNuevoRouteImport
+      parentRoute: typeof AuthenticatedPacientesRoute
+    }
   }
 }
 
+interface AuthenticatedPacientesRouteChildren {
+  AuthenticatedPacientesNuevoRoute: typeof AuthenticatedPacientesNuevoRoute
+}
+
+const AuthenticatedPacientesRouteChildren: AuthenticatedPacientesRouteChildren =
+  {
+    AuthenticatedPacientesNuevoRoute: AuthenticatedPacientesNuevoRoute,
+  }
+
+const AuthenticatedPacientesRouteWithChildren =
+  AuthenticatedPacientesRoute._addFileChildren(
+    AuthenticatedPacientesRouteChildren,
+  )
+
+interface AuthenticatedRouteChildren {
+  AuthenticatedPacientesRoute: typeof AuthenticatedPacientesRouteWithChildren
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedPacientesRoute: AuthenticatedPacientesRouteWithChildren,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
