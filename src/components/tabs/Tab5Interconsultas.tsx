@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, SERVICE_LABELS, type ServiceType } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { fmtDateTime } from "@/lib/medical";
 import { toast } from "sonner";
 import { Plus, Send } from "lucide-react";
+import { sendPush } from "@/lib/push.functions";
 
 export function Tab5Interconsultas({ admission }: { admission: any }) {
   const auth = useAuth();
