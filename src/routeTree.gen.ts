@@ -9,38 +9,159 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SignupRouteImport } from './routes/signup'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedTrasladosRouteImport } from './routes/_authenticated/traslados'
+import { Route as AuthenticatedPacientesRouteImport } from './routes/_authenticated/pacientes'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedPacientesNuevoRouteImport } from './routes/_authenticated/pacientes.nuevo'
+import { Route as AuthenticatedPacientesPatientIdRouteImport } from './routes/_authenticated/pacientes.$patientId'
 
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedTrasladosRoute = AuthenticatedTrasladosRouteImport.update({
+  id: '/traslados',
+  path: '/traslados',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedPacientesRoute = AuthenticatedPacientesRouteImport.update({
+  id: '/pacientes',
+  path: '/pacientes',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedPacientesNuevoRoute =
+  AuthenticatedPacientesNuevoRouteImport.update({
+    id: '/nuevo',
+    path: '/nuevo',
+    getParentRoute: () => AuthenticatedPacientesRoute,
+  } as any)
+const AuthenticatedPacientesPatientIdRoute =
+  AuthenticatedPacientesPatientIdRouteImport.update({
+    id: '/$patientId',
+    path: '/$patientId',
+    getParentRoute: () => AuthenticatedPacientesRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/admin': typeof AuthenticatedAdminRoute
+  '/pacientes': typeof AuthenticatedPacientesRouteWithChildren
+  '/traslados': typeof AuthenticatedTrasladosRoute
+  '/pacientes/$patientId': typeof AuthenticatedPacientesPatientIdRoute
+  '/pacientes/nuevo': typeof AuthenticatedPacientesNuevoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/admin': typeof AuthenticatedAdminRoute
+  '/pacientes': typeof AuthenticatedPacientesRouteWithChildren
+  '/traslados': typeof AuthenticatedTrasladosRoute
+  '/pacientes/$patientId': typeof AuthenticatedPacientesPatientIdRoute
+  '/pacientes/nuevo': typeof AuthenticatedPacientesNuevoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/pacientes': typeof AuthenticatedPacientesRouteWithChildren
+  '/_authenticated/traslados': typeof AuthenticatedTrasladosRoute
+  '/_authenticated/pacientes/$patientId': typeof AuthenticatedPacientesPatientIdRoute
+  '/_authenticated/pacientes/nuevo': typeof AuthenticatedPacientesNuevoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/signup'
+    | '/admin'
+    | '/pacientes'
+    | '/traslados'
+    | '/pacientes/$patientId'
+    | '/pacientes/nuevo'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/login'
+    | '/signup'
+    | '/admin'
+    | '/pacientes'
+    | '/traslados'
+    | '/pacientes/$patientId'
+    | '/pacientes/nuevo'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/login'
+    | '/signup'
+    | '/_authenticated/admin'
+    | '/_authenticated/pacientes'
+    | '/_authenticated/traslados'
+    | '/_authenticated/pacientes/$patientId'
+    | '/_authenticated/pacientes/nuevo'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  LoginRoute: typeof LoginRoute
+  SignupRoute: typeof SignupRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +169,82 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/traslados': {
+      id: '/_authenticated/traslados'
+      path: '/traslados'
+      fullPath: '/traslados'
+      preLoaderRoute: typeof AuthenticatedTrasladosRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/pacientes': {
+      id: '/_authenticated/pacientes'
+      path: '/pacientes'
+      fullPath: '/pacientes'
+      preLoaderRoute: typeof AuthenticatedPacientesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/pacientes/nuevo': {
+      id: '/_authenticated/pacientes/nuevo'
+      path: '/nuevo'
+      fullPath: '/pacientes/nuevo'
+      preLoaderRoute: typeof AuthenticatedPacientesNuevoRouteImport
+      parentRoute: typeof AuthenticatedPacientesRoute
+    }
+    '/_authenticated/pacientes/$patientId': {
+      id: '/_authenticated/pacientes/$patientId'
+      path: '/$patientId'
+      fullPath: '/pacientes/$patientId'
+      preLoaderRoute: typeof AuthenticatedPacientesPatientIdRouteImport
+      parentRoute: typeof AuthenticatedPacientesRoute
+    }
   }
 }
 
+interface AuthenticatedPacientesRouteChildren {
+  AuthenticatedPacientesPatientIdRoute: typeof AuthenticatedPacientesPatientIdRoute
+  AuthenticatedPacientesNuevoRoute: typeof AuthenticatedPacientesNuevoRoute
+}
+
+const AuthenticatedPacientesRouteChildren: AuthenticatedPacientesRouteChildren =
+  {
+    AuthenticatedPacientesPatientIdRoute: AuthenticatedPacientesPatientIdRoute,
+    AuthenticatedPacientesNuevoRoute: AuthenticatedPacientesNuevoRoute,
+  }
+
+const AuthenticatedPacientesRouteWithChildren =
+  AuthenticatedPacientesRoute._addFileChildren(
+    AuthenticatedPacientesRouteChildren,
+  )
+
+interface AuthenticatedRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedPacientesRoute: typeof AuthenticatedPacientesRouteWithChildren
+  AuthenticatedTrasladosRoute: typeof AuthenticatedTrasladosRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedPacientesRoute: AuthenticatedPacientesRouteWithChildren,
+  AuthenticatedTrasladosRoute: AuthenticatedTrasladosRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  LoginRoute: LoginRoute,
+  SignupRoute: SignupRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
