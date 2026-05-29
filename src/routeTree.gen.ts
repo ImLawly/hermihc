@@ -15,6 +15,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedPacientesRouteImport } from './routes/_authenticated/pacientes'
 import { Route as AuthenticatedPacientesNuevoRouteImport } from './routes/_authenticated/pacientes.nuevo'
+import { Route as AuthenticatedPacientesPatientIdRouteImport } from './routes/_authenticated/pacientes.$patientId'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -46,12 +47,19 @@ const AuthenticatedPacientesNuevoRoute =
     path: '/nuevo',
     getParentRoute: () => AuthenticatedPacientesRoute,
   } as any)
+const AuthenticatedPacientesPatientIdRoute =
+  AuthenticatedPacientesPatientIdRouteImport.update({
+    id: '/$patientId',
+    path: '/$patientId',
+    getParentRoute: () => AuthenticatedPacientesRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/pacientes': typeof AuthenticatedPacientesRouteWithChildren
+  '/pacientes/$patientId': typeof AuthenticatedPacientesPatientIdRoute
   '/pacientes/nuevo': typeof AuthenticatedPacientesNuevoRoute
 }
 export interface FileRoutesByTo {
@@ -59,6 +67,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/pacientes': typeof AuthenticatedPacientesRouteWithChildren
+  '/pacientes/$patientId': typeof AuthenticatedPacientesPatientIdRoute
   '/pacientes/nuevo': typeof AuthenticatedPacientesNuevoRoute
 }
 export interface FileRoutesById {
@@ -68,13 +77,26 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/_authenticated/pacientes': typeof AuthenticatedPacientesRouteWithChildren
+  '/_authenticated/pacientes/$patientId': typeof AuthenticatedPacientesPatientIdRoute
   '/_authenticated/pacientes/nuevo': typeof AuthenticatedPacientesNuevoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/signup' | '/pacientes' | '/pacientes/nuevo'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/signup'
+    | '/pacientes'
+    | '/pacientes/$patientId'
+    | '/pacientes/nuevo'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/signup' | '/pacientes' | '/pacientes/nuevo'
+  to:
+    | '/'
+    | '/login'
+    | '/signup'
+    | '/pacientes'
+    | '/pacientes/$patientId'
+    | '/pacientes/nuevo'
   id:
     | '__root__'
     | '/'
@@ -82,6 +104,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/_authenticated/pacientes'
+    | '/_authenticated/pacientes/$patientId'
     | '/_authenticated/pacientes/nuevo'
   fileRoutesById: FileRoutesById
 }
@@ -136,15 +159,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPacientesNuevoRouteImport
       parentRoute: typeof AuthenticatedPacientesRoute
     }
+    '/_authenticated/pacientes/$patientId': {
+      id: '/_authenticated/pacientes/$patientId'
+      path: '/$patientId'
+      fullPath: '/pacientes/$patientId'
+      preLoaderRoute: typeof AuthenticatedPacientesPatientIdRouteImport
+      parentRoute: typeof AuthenticatedPacientesRoute
+    }
   }
 }
 
 interface AuthenticatedPacientesRouteChildren {
+  AuthenticatedPacientesPatientIdRoute: typeof AuthenticatedPacientesPatientIdRoute
   AuthenticatedPacientesNuevoRoute: typeof AuthenticatedPacientesNuevoRoute
 }
 
 const AuthenticatedPacientesRouteChildren: AuthenticatedPacientesRouteChildren =
   {
+    AuthenticatedPacientesPatientIdRoute: AuthenticatedPacientesPatientIdRoute,
     AuthenticatedPacientesNuevoRoute: AuthenticatedPacientesNuevoRoute,
   }
 
@@ -174,3 +206,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
