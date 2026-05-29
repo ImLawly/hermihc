@@ -51,6 +51,7 @@ function AuthenticatedLayout() {
   ].filter(n => n.show);
 
   return (
+    <SyncProvider>
     <div className="min-h-screen flex flex-col bg-background">
       <header className="sticky top-0 z-30 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
         <div className="max-w-7xl mx-auto px-4 h-14 flex items-center gap-3">
