@@ -74,8 +74,10 @@ function AuthenticatedLayout() {
             ))}
           </nav>
 
-          <div className="ml-auto flex items-center gap-3">
+          <div className="ml-auto flex items-center gap-2 sm:gap-3">
             <OnlineStatus />
+            <NotificationBell />
+            <PushToggle />
             <div className="hidden sm:flex flex-col items-end text-right leading-tight">
               <span className="text-xs font-semibold">{auth.profile?.full_name}</span>
               <span className="text-[10px] text-muted-foreground">
