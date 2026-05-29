@@ -87,6 +87,7 @@ function NewInterconsult({ admission, onSaved }: { admission: any; onSaved: () =
 function InterCard({ item }: { item: any }) {
   const auth = useAuth();
   const qc = useQueryClient();
+  const push = useServerFn(sendPush);
   const [respuesta, setResp] = useState(item.respuesta ?? "");
   const isTarget = auth.services.includes(item.target_service);
 
@@ -96,6 +97,14 @@ function InterCard({ item }: { item: any }) {
         respuesta, responded_by: auth.user!.id, responded_at: new Date().toISOString(),
       } as any).eq("id", item.id);
       if (error) throw error;
+      try {
+        await push({ data: {
+          user_id: item.created_by,
+          title: "Interconsulta respondida",
+          body: respuesta.slice(0, 120),
+          url: `/pacientes/${item.admission_id}`,
+        }});
+      } catch { /* non-fatal */ }
     },
     onSuccess: () => { toast.success("Respuesta enviada"); qc.invalidateQueries({ queryKey: ["interconsults", item.admission_id] }); },
     onError: (e: Error) => toast.error(e.message),
