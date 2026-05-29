@@ -113,9 +113,9 @@ function PatientDetail() {
           {auth.isMedical && (
             <Button size="sm" variant="outline" onClick={() => {
               const newLoc = prompt("Nueva ubicación (emergencia / hospitalizacion / consulta_externa):", patient.current_location);
-              if (!newLoc) return;
+              if (!newLoc || !["emergencia", "hospitalizacion", "consulta_externa"].includes(newLoc)) return;
               const newBed = prompt("Nueva cama (opcional):", patient.current_bed ?? "");
-              updateLocation.mutate({ current_location: newLoc, current_bed: newBed || null });
+              updateLocation.mutate({ current_location: newLoc as "emergencia" | "hospitalizacion" | "consulta_externa", current_bed: newBed || null });
             }}>Reubicar</Button>
           )}
         </div>
