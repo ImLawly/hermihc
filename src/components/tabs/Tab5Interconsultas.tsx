@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, SERVICE_LABELS, type ServiceType } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { fmtDateTime } from "@/lib/medical";
 import { toast } from "sonner";
 import { Plus, Send } from "lucide-react";
+import { sendPush } from "@/lib/push.functions";
 
 export function Tab5Interconsultas({ admission }: { admission: any }) {
   const auth = useAuth();
@@ -40,6 +42,7 @@ export function Tab5Interconsultas({ admission }: { admission: any }) {
 
 function NewInterconsult({ admission, onSaved }: { admission: any; onSaved: () => void }) {
   const auth = useAuth();
+  const push = useServerFn(sendPush);
   const services: ServiceType[] = ["pediatria", "cirugia_general", "cirugia_pediatrica", "traumatologia", "anestesiologia", "obstetricia"];
   const [target_service, setTarget] = useState<ServiceType>(services.find(s => s !== admission.service) ?? "pediatria");
   const [diagnosticos, setDx] = useState("");
@@ -51,13 +54,15 @@ function NewInterconsult({ admission, onSaved }: { admission: any; onSaved: () =
         admission_id: admission.id, target_service, diagnosticos, comentario, created_by: auth.user!.id,
       } as any).select("id").single();
       if (error) throw error;
-      // Notificar al servicio interconsultado
-      await supabase.from("notifications").insert({
-        target_service, kind: "interconsult",
-        title: `Interconsulta a ${SERVICE_LABELS[target_service]}`,
-        body: comentario.slice(0, 200),
-        payload: { interconsult_id: data!.id, admission_id: admission.id },
-      } as any);
+      // In-app notification is created by DB trigger. Send push tickle too:
+      try {
+        await push({ data: {
+          role: "especialista", service: target_service,
+          title: `Interconsulta a ${SERVICE_LABELS[target_service]}`,
+          body: comentario.slice(0, 120),
+          url: `/pacientes/${admission.patient_id}`,
+        }});
+      } catch { /* push failures are non-fatal */ }
     },
     onSuccess: () => { toast.success("Interconsulta enviada"); onSaved(); },
     onError: (e: Error) => toast.error(e.message),
@@ -82,6 +87,7 @@ function NewInterconsult({ admission, onSaved }: { admission: any; onSaved: () =
 function InterCard({ item }: { item: any }) {
   const auth = useAuth();
   const qc = useQueryClient();
+  const push = useServerFn(sendPush);
   const [respuesta, setResp] = useState(item.respuesta ?? "");
   const isTarget = auth.services.includes(item.target_service);
 
@@ -91,6 +97,14 @@ function InterCard({ item }: { item: any }) {
         respuesta, responded_by: auth.user!.id, responded_at: new Date().toISOString(),
       } as any).eq("id", item.id);
       if (error) throw error;
+      try {
+        await push({ data: {
+          user_id: item.created_by,
+          title: "Interconsulta respondida",
+          body: respuesta.slice(0, 120),
+          url: `/pacientes/${item.admission_id}`,
+        }});
+      } catch { /* non-fatal */ }
     },
     onSuccess: () => { toast.success("Respuesta enviada"); qc.invalidateQueries({ queryKey: ["interconsults", item.admission_id] }); },
     onError: (e: Error) => toast.error(e.message),

@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -7,6 +8,7 @@ import { calcAge, LOCATION_LABELS, fmtDateTime } from "@/lib/medical";
 import { ArrowLeft, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { sendPush } from "@/lib/push.functions";
 
 import { Tab1Frontal } from "@/components/tabs/Tab1Frontal";
 import { Tab2Evoluciones } from "@/components/tabs/Tab2Evoluciones";
@@ -72,10 +74,20 @@ function PatientDetail() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const pushFn = useServerFn(sendPush);
   const updateLocation = useMutation({
     mutationFn: async (vals: { current_location: "emergencia" | "hospitalizacion" | "consulta_externa"; current_bed: string | null }) => {
       const { error } = await supabase.from("patients").update(vals).eq("id", patientId);
       if (error) throw error;
+      try {
+        await pushFn({ data: {
+          role: "traslado",
+          title: "Reubicación de paciente",
+          body: `${patient!.apellidos}, ${patient!.nombres} → ${LOCATION_LABELS[vals.current_location]}${vals.current_bed ? ` · Cama ${vals.current_bed}` : ""}`,
+          url: `/traslados`,
+          urgent: true,
+        }});
+      } catch { /* non-fatal */ }
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["patient", patientId] }); toast.success("Ubicación actualizada — notificación enviada a Traslado"); },
     onError: (e: Error) => toast.error(e.message),

@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { BellRing, BellOff } from "lucide-react";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { getRegistration } from "@/lib/offline/registerSW";
 import { useAuth } from "@/hooks/useAuth";
+import { getVapidPublicKey } from "@/lib/push.functions";
 
 function urlBase64ToUint8Array(base64String: string) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -27,16 +29,20 @@ export function PushToggle() {
   const [supported, setSupported] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
   const [busy, setBusy] = useState(false);
-  const vapidKey = import.meta.env.VITE_VAPID_PUBLIC_KEY as string | undefined;
+  const [vapidKey, setVapidKey] = useState<string | null>(null);
+  const fetchKey = useServerFn(getVapidPublicKey);
 
   useEffect(() => {
-    const ok =
-      typeof window !== "undefined" &&
-      "serviceWorker" in navigator &&
-      "PushManager" in window &&
-      !!vapidKey;
-    setSupported(ok);
-    if (!ok) return;
+    if (typeof window === "undefined") return;
+    if (!("serviceWorker" in navigator) || !("PushManager" in window)) return;
+    fetchKey().then(({ key }) => {
+      setVapidKey(key);
+      setSupported(!!key);
+    }).catch(() => setSupported(false));
+  }, [fetchKey]);
+
+  useEffect(() => {
+    if (!vapidKey) return;
     (async () => {
       const reg = await getRegistration();
       const sub = await reg?.pushManager.getSubscription();
