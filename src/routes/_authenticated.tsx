@@ -72,7 +72,7 @@ function AuthenticatedLayout() {
           </nav>
 
           <div className="ml-auto flex items-center gap-3">
-            <div className="hidden sm:flex flex-col items-end text-right leading-tight">
+            <OnlineStatus />
               <span className="text-xs font-semibold">{auth.profile?.full_name}</span>
               <span className="text-[10px] text-muted-foreground">
                 {auth.highestRole ? ROLE_LABELS[auth.highestRole] : "Sin rol"} · {auth.services.map(s => SERVICE_LABELS[s]).join(", ") || "—"}
