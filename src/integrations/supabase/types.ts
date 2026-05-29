@@ -14,16 +14,806 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      admissions: {
+        Row: {
+          admission_date: string
+          antecedentes_familiares: string | null
+          antecedentes_ginecobstetricos: Json | null
+          antecedentes_personales: string | null
+          antecedentes_quirurgicos: string | null
+          bed: string | null
+          comentario_ingreso: string | null
+          created_at: string
+          created_by: string
+          diagnostico_egreso: string | null
+          discharge_at: string | null
+          discharge_type: Database["public"]["Enums"]["discharge_type"] | null
+          examen_fisico: Json | null
+          habitos_psicobiologicos: string | null
+          historia_enfermedad_actual: string | null
+          id: string
+          impresion_diagnostica: string | null
+          labs_ingreso: string | null
+          location: Database["public"]["Enums"]["location_type"]
+          motivo_consulta: string | null
+          patient_id: string
+          record_status: Database["public"]["Enums"]["record_status"]
+          reviewed_at: string | null
+          reviewed_by: string | null
+          service: Database["public"]["Enums"]["service_type"]
+          status: Database["public"]["Enums"]["patient_status"]
+          updated_at: string
+        }
+        Insert: {
+          admission_date: string
+          antecedentes_familiares?: string | null
+          antecedentes_ginecobstetricos?: Json | null
+          antecedentes_personales?: string | null
+          antecedentes_quirurgicos?: string | null
+          bed?: string | null
+          comentario_ingreso?: string | null
+          created_at?: string
+          created_by: string
+          diagnostico_egreso?: string | null
+          discharge_at?: string | null
+          discharge_type?: Database["public"]["Enums"]["discharge_type"] | null
+          examen_fisico?: Json | null
+          habitos_psicobiologicos?: string | null
+          historia_enfermedad_actual?: string | null
+          id?: string
+          impresion_diagnostica?: string | null
+          labs_ingreso?: string | null
+          location: Database["public"]["Enums"]["location_type"]
+          motivo_consulta?: string | null
+          patient_id: string
+          record_status?: Database["public"]["Enums"]["record_status"]
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          service: Database["public"]["Enums"]["service_type"]
+          status?: Database["public"]["Enums"]["patient_status"]
+          updated_at?: string
+        }
+        Update: {
+          admission_date?: string
+          antecedentes_familiares?: string | null
+          antecedentes_ginecobstetricos?: Json | null
+          antecedentes_personales?: string | null
+          antecedentes_quirurgicos?: string | null
+          bed?: string | null
+          comentario_ingreso?: string | null
+          created_at?: string
+          created_by?: string
+          diagnostico_egreso?: string | null
+          discharge_at?: string | null
+          discharge_type?: Database["public"]["Enums"]["discharge_type"] | null
+          examen_fisico?: Json | null
+          habitos_psicobiologicos?: string | null
+          historia_enfermedad_actual?: string | null
+          id?: string
+          impresion_diagnostica?: string | null
+          labs_ingreso?: string | null
+          location?: Database["public"]["Enums"]["location_type"]
+          motivo_consulta?: string | null
+          patient_id?: string
+          record_status?: Database["public"]["Enums"]["record_status"]
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          service?: Database["public"]["Enums"]["service_type"]
+          status?: Database["public"]["Enums"]["patient_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admissions_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      audit_logs: {
+        Row: {
+          after_data: Json | null
+          before_data: Json | null
+          id: number
+          operation: string
+          performed_at: string
+          row_id: string | null
+          table_name: string
+          user_id: string | null
+        }
+        Insert: {
+          after_data?: Json | null
+          before_data?: Json | null
+          id?: number
+          operation: string
+          performed_at?: string
+          row_id?: string | null
+          table_name: string
+          user_id?: string | null
+        }
+        Update: {
+          after_data?: Json | null
+          before_data?: Json | null
+          id?: number
+          operation?: string
+          performed_at?: string
+          row_id?: string | null
+          table_name?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      clinical_notes: {
+        Row: {
+          admission_id: string
+          contenido: string
+          created_at: string
+          created_by: string
+          id: string
+          note_at: string
+          tipo: Database["public"]["Enums"]["note_type"]
+        }
+        Insert: {
+          admission_id: string
+          contenido: string
+          created_at?: string
+          created_by: string
+          id?: string
+          note_at: string
+          tipo: Database["public"]["Enums"]["note_type"]
+        }
+        Update: {
+          admission_id?: string
+          contenido?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          note_at?: string
+          tipo?: Database["public"]["Enums"]["note_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinical_notes_admission_id_fkey"
+            columns: ["admission_id"]
+            isOneToOne: false
+            referencedRelation: "admissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      delivery_notes: {
+        Row: {
+          admission_id: string
+          created_at: string
+          created_by: string
+          descripcion: string
+          diagnostico_egreso_mesa: string | null
+          expulsion_at: string
+          id: string
+        }
+        Insert: {
+          admission_id: string
+          created_at?: string
+          created_by: string
+          descripcion: string
+          diagnostico_egreso_mesa?: string | null
+          expulsion_at: string
+          id?: string
+        }
+        Update: {
+          admission_id?: string
+          created_at?: string
+          created_by?: string
+          descripcion?: string
+          diagnostico_egreso_mesa?: string | null
+          expulsion_at?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_notes_admission_id_fkey"
+            columns: ["admission_id"]
+            isOneToOne: false
+            referencedRelation: "admissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      evolutions: {
+        Row: {
+          admission_id: string
+          created_at: string
+          created_by: string
+          diagnostico_actual: string | null
+          evolution_at: string
+          id: string
+          objetivo: Json | null
+          plan: string | null
+          record_status: Database["public"]["Enums"]["record_status"]
+          reviewed_at: string | null
+          reviewed_by: string | null
+          subjetivo: string | null
+          updated_at: string
+        }
+        Insert: {
+          admission_id: string
+          created_at?: string
+          created_by: string
+          diagnostico_actual?: string | null
+          evolution_at: string
+          id?: string
+          objetivo?: Json | null
+          plan?: string | null
+          record_status?: Database["public"]["Enums"]["record_status"]
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          subjetivo?: string | null
+          updated_at?: string
+        }
+        Update: {
+          admission_id?: string
+          created_at?: string
+          created_by?: string
+          diagnostico_actual?: string | null
+          evolution_at?: string
+          id?: string
+          objetivo?: Json | null
+          plan?: string | null
+          record_status?: Database["public"]["Enums"]["record_status"]
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          subjetivo?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evolutions_admission_id_fkey"
+            columns: ["admission_id"]
+            isOneToOne: false
+            referencedRelation: "admissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interconsultations: {
+        Row: {
+          admission_id: string
+          comentario: string
+          created_at: string
+          created_by: string
+          diagnosticos: string | null
+          id: string
+          responded_at: string | null
+          responded_by: string | null
+          respuesta: string | null
+          target_service: Database["public"]["Enums"]["service_type"]
+        }
+        Insert: {
+          admission_id: string
+          comentario: string
+          created_at?: string
+          created_by: string
+          diagnosticos?: string | null
+          id?: string
+          responded_at?: string | null
+          responded_by?: string | null
+          respuesta?: string | null
+          target_service: Database["public"]["Enums"]["service_type"]
+        }
+        Update: {
+          admission_id?: string
+          comentario?: string
+          created_at?: string
+          created_by?: string
+          diagnosticos?: string | null
+          id?: string
+          responded_at?: string | null
+          responded_by?: string | null
+          respuesta?: string | null
+          target_service?: Database["public"]["Enums"]["service_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interconsultations_admission_id_fkey"
+            columns: ["admission_id"]
+            isOneToOne: false
+            referencedRelation: "admissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lab_results: {
+        Row: {
+          admission_id: string
+          created_at: string
+          created_by: string
+          id: string
+          parametro: string
+          sampled_at: string
+          unidad: string | null
+          valor: string
+        }
+        Insert: {
+          admission_id: string
+          created_at?: string
+          created_by: string
+          id?: string
+          parametro: string
+          sampled_at: string
+          unidad?: string | null
+          valor: string
+        }
+        Update: {
+          admission_id?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          parametro?: string
+          sampled_at?: string
+          unidad?: string | null
+          valor?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lab_results_admission_id_fkey"
+            columns: ["admission_id"]
+            isOneToOne: false
+            referencedRelation: "admissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      medical_orders: {
+        Row: {
+          admission_id: string
+          created_at: string
+          created_by: string
+          id: string
+          items: Json
+          order_at: string
+          record_status: Database["public"]["Enums"]["record_status"]
+          reviewed_at: string | null
+          reviewed_by: string | null
+        }
+        Insert: {
+          admission_id: string
+          created_at?: string
+          created_by: string
+          id?: string
+          items?: Json
+          order_at: string
+          record_status?: Database["public"]["Enums"]["record_status"]
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+        }
+        Update: {
+          admission_id?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          items?: Json
+          order_at?: string
+          record_status?: Database["public"]["Enums"]["record_status"]
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medical_orders_admission_id_fkey"
+            columns: ["admission_id"]
+            isOneToOne: false
+            referencedRelation: "admissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      monitoring_entries: {
+        Row: {
+          admission_id: string
+          created_at: string
+          du: string | null
+          fc: number | null
+          fcf: number | null
+          fr: number | null
+          id: string
+          mf: string | null
+          performed_by: string
+          recorded_at: string
+          sato2: number | null
+          ta: string | null
+          tam: number | null
+        }
+        Insert: {
+          admission_id: string
+          created_at?: string
+          du?: string | null
+          fc?: number | null
+          fcf?: number | null
+          fr?: number | null
+          id?: string
+          mf?: string | null
+          performed_by: string
+          recorded_at: string
+          sato2?: number | null
+          ta?: string | null
+          tam?: number | null
+        }
+        Update: {
+          admission_id?: string
+          created_at?: string
+          du?: string | null
+          fc?: number | null
+          fcf?: number | null
+          fr?: number | null
+          id?: string
+          mf?: string | null
+          performed_by?: string
+          recorded_at?: string
+          sato2?: number | null
+          ta?: string | null
+          tam?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "monitoring_entries_admission_id_fkey"
+            columns: ["admission_id"]
+            isOneToOne: false
+            referencedRelation: "admissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          kind: string
+          payload: Json | null
+          read_at: string | null
+          target_role: Database["public"]["Enums"]["app_role"] | null
+          target_service: Database["public"]["Enums"]["service_type"] | null
+          title: string
+          user_id: string | null
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          kind: string
+          payload?: Json | null
+          read_at?: string | null
+          target_role?: Database["public"]["Enums"]["app_role"] | null
+          target_service?: Database["public"]["Enums"]["service_type"] | null
+          title: string
+          user_id?: string | null
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          payload?: Json | null
+          read_at?: string | null
+          target_role?: Database["public"]["Enums"]["app_role"] | null
+          target_service?: Database["public"]["Enums"]["service_type"] | null
+          title?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      operative_notes: {
+        Row: {
+          admission_id: string
+          anestesiologo: string | null
+          circulante: string | null
+          cirujano: string | null
+          created_at: string
+          created_by: string
+          descripcion: string
+          diagnostico_postoperatorio: string | null
+          diagnosticos_preoperatorios: string | null
+          hallazgos: string | null
+          id: string
+          instrumentista: string | null
+          monitor_anestesiologo: string | null
+          monitor_cirujano: string | null
+          primer_ayudante: string | null
+          rn_peso: number | null
+          rn_talla: number | null
+          segundo_ayudante: string | null
+          surgery_at: string
+          tercer_ayudante: string | null
+        }
+        Insert: {
+          admission_id: string
+          anestesiologo?: string | null
+          circulante?: string | null
+          cirujano?: string | null
+          created_at?: string
+          created_by: string
+          descripcion: string
+          diagnostico_postoperatorio?: string | null
+          diagnosticos_preoperatorios?: string | null
+          hallazgos?: string | null
+          id?: string
+          instrumentista?: string | null
+          monitor_anestesiologo?: string | null
+          monitor_cirujano?: string | null
+          primer_ayudante?: string | null
+          rn_peso?: number | null
+          rn_talla?: number | null
+          segundo_ayudante?: string | null
+          surgery_at: string
+          tercer_ayudante?: string | null
+        }
+        Update: {
+          admission_id?: string
+          anestesiologo?: string | null
+          circulante?: string | null
+          cirujano?: string | null
+          created_at?: string
+          created_by?: string
+          descripcion?: string
+          diagnostico_postoperatorio?: string | null
+          diagnosticos_preoperatorios?: string | null
+          hallazgos?: string | null
+          id?: string
+          instrumentista?: string | null
+          monitor_anestesiologo?: string | null
+          monitor_cirujano?: string | null
+          primer_ayudante?: string | null
+          rn_peso?: number | null
+          rn_talla?: number | null
+          segundo_ayudante?: string | null
+          surgery_at?: string
+          tercer_ayudante?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "operative_notes_admission_id_fkey"
+            columns: ["admission_id"]
+            isOneToOne: false
+            referencedRelation: "admissions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_administrations: {
+        Row: {
+          administered_at: string | null
+          administered_by: string | null
+          created_at: string
+          id: string
+          item_index: number
+          notes: string | null
+          order_id: string
+          scheduled_at: string
+        }
+        Insert: {
+          administered_at?: string | null
+          administered_by?: string | null
+          created_at?: string
+          id?: string
+          item_index: number
+          notes?: string | null
+          order_id: string
+          scheduled_at: string
+        }
+        Update: {
+          administered_at?: string | null
+          administered_by?: string | null
+          created_at?: string
+          id?: string
+          item_index?: number
+          notes?: string | null
+          order_id?: string
+          scheduled_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_administrations_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "medical_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      patient_transfers: {
+        Row: {
+          changed_at: string
+          changed_by: string
+          from_bed: string | null
+          from_location: Database["public"]["Enums"]["location_type"] | null
+          id: string
+          patient_id: string
+          to_bed: string | null
+          to_location: Database["public"]["Enums"]["location_type"]
+        }
+        Insert: {
+          changed_at?: string
+          changed_by: string
+          from_bed?: string | null
+          from_location?: Database["public"]["Enums"]["location_type"] | null
+          id?: string
+          patient_id: string
+          to_bed?: string | null
+          to_location: Database["public"]["Enums"]["location_type"]
+        }
+        Update: {
+          changed_at?: string
+          changed_by?: string
+          from_bed?: string | null
+          from_location?: Database["public"]["Enums"]["location_type"] | null
+          id?: string
+          patient_id?: string
+          to_bed?: string | null
+          to_location?: Database["public"]["Enums"]["location_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "patient_transfers_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      patients: {
+        Row: {
+          apellidos: string
+          cedula_number: string
+          cedula_type: Database["public"]["Enums"]["cedula_type"]
+          created_at: string
+          created_by: string
+          current_bed: string | null
+          current_location: Database["public"]["Enums"]["location_type"]
+          direccion: string | null
+          fecha_nacimiento: string
+          id: string
+          nombres: string
+          service: Database["public"]["Enums"]["service_type"]
+          status: Database["public"]["Enums"]["patient_status"]
+          telefono: string | null
+          updated_at: string
+        }
+        Insert: {
+          apellidos: string
+          cedula_number: string
+          cedula_type: Database["public"]["Enums"]["cedula_type"]
+          created_at?: string
+          created_by: string
+          current_bed?: string | null
+          current_location?: Database["public"]["Enums"]["location_type"]
+          direccion?: string | null
+          fecha_nacimiento: string
+          id?: string
+          nombres: string
+          service: Database["public"]["Enums"]["service_type"]
+          status?: Database["public"]["Enums"]["patient_status"]
+          telefono?: string | null
+          updated_at?: string
+        }
+        Update: {
+          apellidos?: string
+          cedula_number?: string
+          cedula_type?: Database["public"]["Enums"]["cedula_type"]
+          created_at?: string
+          created_by?: string
+          current_bed?: string | null
+          current_location?: Database["public"]["Enums"]["location_type"]
+          direccion?: string | null
+          fecha_nacimiento?: string
+          id?: string
+          nombres?: string
+          service?: Database["public"]["Enums"]["service_type"]
+          status?: Database["public"]["Enums"]["patient_status"]
+          telefono?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          approved: boolean
+          cedula: string | null
+          created_at: string
+          full_name: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          approved?: boolean
+          cedula?: string | null
+          created_at?: string
+          full_name: string
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          approved?: boolean
+          cedula?: string | null
+          created_at?: string
+          full_name?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          service: Database["public"]["Enums"]["service_type"] | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          service?: Database["public"]["Enums"]["service_type"] | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          service?: Database["public"]["Enums"]["service_type"] | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      can_review_records: { Args: { _user_id: string }; Returns: boolean }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      has_service_access: {
+        Args: {
+          _service: Database["public"]["Enums"]["service_type"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_medical_staff: { Args: { _user_id: string }; Returns: boolean }
+      is_nurse: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      app_role:
+        | "admin"
+        | "especialista"
+        | "r3"
+        | "r2"
+        | "r1"
+        | "enfermeria"
+        | "traslado"
+      cedula_type: "V" | "E"
+      discharge_type: "alta_medica" | "contraopinion"
+      location_type: "consulta_externa" | "emergencia" | "hospitalizacion"
+      note_type: "medica" | "aclaratoria" | "enfermeria"
+      patient_status: "activa" | "archivada"
+      record_status: "pendiente_revision" | "confirmado"
+      service_type:
+        | "obstetricia"
+        | "pediatria"
+        | "cirugia_general"
+        | "cirugia_pediatrica"
+        | "traumatologia"
+        | "anestesiologia"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +940,30 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: [
+        "admin",
+        "especialista",
+        "r3",
+        "r2",
+        "r1",
+        "enfermeria",
+        "traslado",
+      ],
+      cedula_type: ["V", "E"],
+      discharge_type: ["alta_medica", "contraopinion"],
+      location_type: ["consulta_externa", "emergencia", "hospitalizacion"],
+      note_type: ["medica", "aclaratoria", "enfermeria"],
+      patient_status: ["activa", "archivada"],
+      record_status: ["pendiente_revision", "confirmado"],
+      service_type: [
+        "obstetricia",
+        "pediatria",
+        "cirugia_general",
+        "cirugia_pediatrica",
+        "traumatologia",
+        "anestesiologia",
+      ],
+    },
   },
 } as const
