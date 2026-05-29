@@ -3,9 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
   beforeLoad: async () => {
-    const { data } = await supabase.auth.getSession();
-    if (data.session) throw redirect({ to: "/pacientes" });
-    throw redirect({ to: "/login" });
+    const { data } = await supabase.auth.getUser();
+    throw redirect({ to: data.user ? "/pacientes" : "/login" });
   },
-  component: () => null,
 });
