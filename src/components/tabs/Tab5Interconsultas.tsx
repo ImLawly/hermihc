@@ -42,6 +42,7 @@ export function Tab5Interconsultas({ admission }: { admission: any }) {
 
 function NewInterconsult({ admission, onSaved }: { admission: any; onSaved: () => void }) {
   const auth = useAuth();
+  const push = useServerFn(sendPush);
   const services: ServiceType[] = ["pediatria", "cirugia_general", "cirugia_pediatrica", "traumatologia", "anestesiologia", "obstetricia"];
   const [target_service, setTarget] = useState<ServiceType>(services.find(s => s !== admission.service) ?? "pediatria");
   const [diagnosticos, setDx] = useState("");
@@ -53,13 +54,15 @@ function NewInterconsult({ admission, onSaved }: { admission: any; onSaved: () =
         admission_id: admission.id, target_service, diagnosticos, comentario, created_by: auth.user!.id,
       } as any).select("id").single();
       if (error) throw error;
-      // Notificar al servicio interconsultado
-      await supabase.from("notifications").insert({
-        target_service, kind: "interconsult",
-        title: `Interconsulta a ${SERVICE_LABELS[target_service]}`,
-        body: comentario.slice(0, 200),
-        payload: { interconsult_id: data!.id, admission_id: admission.id },
-      } as any);
+      // In-app notification is created by DB trigger. Send push tickle too:
+      try {
+        await push({ data: {
+          role: "especialista", service: target_service,
+          title: `Interconsulta a ${SERVICE_LABELS[target_service]}`,
+          body: comentario.slice(0, 120),
+          url: `/pacientes/${admission.patient_id}`,
+        }});
+      } catch { /* push failures are non-fatal */ }
     },
     onSuccess: () => { toast.success("Interconsulta enviada"); onSaved(); },
     onError: (e: Error) => toast.error(e.message),
