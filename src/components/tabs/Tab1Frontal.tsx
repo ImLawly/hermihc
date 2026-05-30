@@ -29,6 +29,8 @@ export function Tab1Frontal({ admission, patient }: { admission: any; patient: a
   });
 
   const locked = admission.discharge_at != null;
+  const [editing, setEditing] = useState(false);
+  const readOnly = locked || !editing;
   const { sys, dia } = parseTA(form.ef.ta);
   const tam = calcTAM(sys, dia);
 
