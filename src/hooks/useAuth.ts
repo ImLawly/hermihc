@@ -80,7 +80,8 @@ export function useAuth(): AuthState {
 
   const services = Array.from(new Set(roles.map(r => r.service).filter(Boolean))) as ServiceType[];
   const has = (r: AppRole) => roles.some(x => x.role === r);
-  const isAdmin = has("admin");
+  const isSuperuser = !!user && user.id === SUPERUSER_ID;
+  const isAdmin = has("admin") || isSuperuser;
   const isMedical = isAdmin || has("especialista") || has("r3") || has("r2") || has("r1");
   const isNurse = has("enfermeria");
   const isTransport = has("traslado");
@@ -91,7 +92,8 @@ export function useAuth(): AuthState {
 
   return {
     loading, session, user, profile, roles, services,
-    isAdmin, isMedical, isNurse, isTransport, canReview, highestRole,
+    isAdmin, isSuperuser, isMedical, isNurse, isTransport, canReview, highestRole,
+
     refresh: async () => { await loadAll(user); },
     signOut: async () => { await supabase.auth.signOut(); },
   };
