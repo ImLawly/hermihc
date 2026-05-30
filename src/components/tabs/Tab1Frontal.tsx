@@ -51,7 +51,7 @@ export function Tab1Frontal({ admission, patient }: { admission: any; patient: a
       } as any).eq("id", admission.id);
       if (error) throw error;
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["admission", admission.patient_id] }); toast.success("Hoja frontal guardada"); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["admission", admission.patient_id] }); setEditing(false); toast.success("Hoja frontal guardada"); },
     onError: (e: Error) => toast.error(e.message),
   });
 
