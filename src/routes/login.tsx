@@ -24,12 +24,16 @@ function LoginPage() {
   const handleEmail = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const loginEmail = email.trim().toLowerCase() === SUPERUSER_USERNAME.toLowerCase()
+      ? SUPERUSER_EMAIL
+      : email.trim();
+    const { error } = await supabase.auth.signInWithPassword({ email: loginEmail, password });
     setLoading(false);
     if (error) { toast.error(error.message); return; }
     toast.success("Sesión iniciada");
     navigate({ to: "/pacientes" });
   };
+
 
   const handleGoogle = async () => {
     const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
