@@ -821,6 +821,7 @@ export type Database = {
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_medical_staff: { Args: { _user_id: string }; Returns: boolean }
       is_nurse: { Args: { _user_id: string }; Returns: boolean }
+      is_superuser: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       app_role:

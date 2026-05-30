@@ -2,6 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
+import { SUPERUSER_USERNAME, SUPERUSER_EMAIL } from "@/lib/superuser";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,12 +24,16 @@ function LoginPage() {
   const handleEmail = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const loginEmail = email.trim().toLowerCase() === SUPERUSER_USERNAME.toLowerCase()
+      ? SUPERUSER_EMAIL
+      : email.trim();
+    const { error } = await supabase.auth.signInWithPassword({ email: loginEmail, password });
     setLoading(false);
     if (error) { toast.error(error.message); return; }
     toast.success("Sesión iniciada");
     navigate({ to: "/pacientes" });
   };
+
 
   const handleGoogle = async () => {
     const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
@@ -54,7 +60,7 @@ function LoginPage() {
           <form onSubmit={handleEmail} className="space-y-3">
             <div>
               <Label htmlFor="email">Correo</Label>
-              <Input id="email" type="email" required value={email} onChange={e => setEmail(e.target.value)} autoComplete="email" />
+              <Input id="email" type="text" required value={email} onChange={e => setEmail(e.target.value)} autoComplete="username" placeholder="correo o usuario" />
             </div>
             <div>
               <Label htmlFor="pwd">Contraseña</Label>

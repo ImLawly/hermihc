@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { SUPERUSER_ID } from "@/lib/superuser";
+
 
 export type AppRole = "admin" | "especialista" | "r3" | "r2" | "r1" | "enfermeria" | "traslado";
 export type ServiceType =
@@ -27,6 +29,7 @@ export interface AuthState {
   roles: UserRoleRow[];
   services: ServiceType[];
   isAdmin: boolean;
+  isSuperuser: boolean;
   isMedical: boolean;
   isNurse: boolean;
   isTransport: boolean;
@@ -35,6 +38,7 @@ export interface AuthState {
   refresh: () => Promise<void>;
   signOut: () => Promise<void>;
 }
+
 
 const RANK: Record<AppRole, number> = {
   admin: 100, especialista: 90, r3: 80, r2: 70, r1: 60, enfermeria: 50, traslado: 40,
@@ -76,7 +80,8 @@ export function useAuth(): AuthState {
 
   const services = Array.from(new Set(roles.map(r => r.service).filter(Boolean))) as ServiceType[];
   const has = (r: AppRole) => roles.some(x => x.role === r);
-  const isAdmin = has("admin");
+  const isSuperuser = !!user && user.id === SUPERUSER_ID;
+  const isAdmin = has("admin") || isSuperuser;
   const isMedical = isAdmin || has("especialista") || has("r3") || has("r2") || has("r1");
   const isNurse = has("enfermeria");
   const isTransport = has("traslado");
@@ -87,7 +92,8 @@ export function useAuth(): AuthState {
 
   return {
     loading, session, user, profile, roles, services,
-    isAdmin, isMedical, isNurse, isTransport, canReview, highestRole,
+    isAdmin, isSuperuser, isMedical, isNurse, isTransport, canReview, highestRole,
+
     refresh: async () => { await loadAll(user); },
     signOut: async () => { await supabase.auth.signOut(); },
   };

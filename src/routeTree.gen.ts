@@ -14,6 +14,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedTrasladosRouteImport } from './routes/_authenticated/traslados'
+import { Route as AuthenticatedSuperuserRouteImport } from './routes/_authenticated/superuser'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedPacientesIndexRouteImport } from './routes/_authenticated/pacientes.index'
 import { Route as AuthenticatedPacientesNuevoRouteImport } from './routes/_authenticated/pacientes.nuevo'
@@ -41,6 +42,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthenticatedTrasladosRoute = AuthenticatedTrasladosRouteImport.update({
   id: '/traslados',
   path: '/traslados',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedSuperuserRoute = AuthenticatedSuperuserRouteImport.update({
+  id: '/superuser',
+  path: '/superuser',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
@@ -72,6 +78,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/superuser': typeof AuthenticatedSuperuserRoute
   '/traslados': typeof AuthenticatedTrasladosRoute
   '/pacientes/$patientId': typeof AuthenticatedPacientesPatientIdRoute
   '/pacientes/nuevo': typeof AuthenticatedPacientesNuevoRoute
@@ -82,6 +89,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/superuser': typeof AuthenticatedSuperuserRoute
   '/traslados': typeof AuthenticatedTrasladosRoute
   '/pacientes/$patientId': typeof AuthenticatedPacientesPatientIdRoute
   '/pacientes/nuevo': typeof AuthenticatedPacientesNuevoRoute
@@ -94,6 +102,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/superuser': typeof AuthenticatedSuperuserRoute
   '/_authenticated/traslados': typeof AuthenticatedTrasladosRoute
   '/_authenticated/pacientes/$patientId': typeof AuthenticatedPacientesPatientIdRoute
   '/_authenticated/pacientes/nuevo': typeof AuthenticatedPacientesNuevoRoute
@@ -106,6 +115,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/admin'
+    | '/superuser'
     | '/traslados'
     | '/pacientes/$patientId'
     | '/pacientes/nuevo'
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/admin'
+    | '/superuser'
     | '/traslados'
     | '/pacientes/$patientId'
     | '/pacientes/nuevo'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/_authenticated/admin'
+    | '/_authenticated/superuser'
     | '/_authenticated/traslados'
     | '/_authenticated/pacientes/$patientId'
     | '/_authenticated/pacientes/nuevo'
@@ -177,6 +189,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTrasladosRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/superuser': {
+      id: '/_authenticated/superuser'
+      path: '/superuser'
+      fullPath: '/superuser'
+      preLoaderRoute: typeof AuthenticatedSuperuserRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -210,6 +229,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedSuperuserRoute: typeof AuthenticatedSuperuserRoute
   AuthenticatedTrasladosRoute: typeof AuthenticatedTrasladosRoute
   AuthenticatedPacientesPatientIdRoute: typeof AuthenticatedPacientesPatientIdRoute
   AuthenticatedPacientesNuevoRoute: typeof AuthenticatedPacientesNuevoRoute
@@ -218,6 +238,7 @@ interface AuthenticatedRouteChildren {
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedSuperuserRoute: AuthenticatedSuperuserRoute,
   AuthenticatedTrasladosRoute: AuthenticatedTrasladosRoute,
   AuthenticatedPacientesPatientIdRoute: AuthenticatedPacientesPatientIdRoute,
   AuthenticatedPacientesNuevoRoute: AuthenticatedPacientesNuevoRoute,
