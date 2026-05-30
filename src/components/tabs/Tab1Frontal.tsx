@@ -87,55 +87,55 @@ export function Tab1Frontal({ admission, patient }: { admission: any; patient: a
     <div className="space-y-5">
       <Section title="Datos de ingreso">
         <Field label="Fecha y hora de ingreso"><Input type="text" disabled value={fmtDateTime(admission.admission_date)} /></Field>
-        <Field label="Motivo de consulta"><Textarea rows={2} value={form.motivo_consulta} onChange={e => setForm({ ...form, motivo_consulta: e.target.value })} disabled={locked} /></Field>
-        <Field label="Historia de la enfermedad actual" wide><Textarea rows={4} value={form.historia_enfermedad_actual} onChange={e => setForm({ ...form, historia_enfermedad_actual: e.target.value })} disabled={locked} /></Field>
+        <Field label="Motivo de consulta"><Textarea rows={2} value={form.motivo_consulta} onChange={e => setForm({ ...form, motivo_consulta: e.target.value })} disabled={readOnly} /></Field>
+        <Field label="Historia de la enfermedad actual" wide><Textarea rows={4} value={form.historia_enfermedad_actual} onChange={e => setForm({ ...form, historia_enfermedad_actual: e.target.value })} disabled={readOnly} /></Field>
       </Section>
 
       <Section title="Antecedentes">
-        <Field label="Personales"><Textarea rows={2} value={form.antecedentes_personales} onChange={e => setForm({ ...form, antecedentes_personales: e.target.value })} disabled={locked} /></Field>
-        <Field label="Familiares"><Textarea rows={2} value={form.antecedentes_familiares} onChange={e => setForm({ ...form, antecedentes_familiares: e.target.value })} disabled={locked} /></Field>
-        <Field label="Quirúrgicos"><Textarea rows={2} value={form.antecedentes_quirurgicos} onChange={e => setForm({ ...form, antecedentes_quirurgicos: e.target.value })} disabled={locked} /></Field>
-        <Field label="Hábitos psicobiológicos"><Textarea rows={2} value={form.habitos_psicobiologicos} onChange={e => setForm({ ...form, habitos_psicobiologicos: e.target.value })} disabled={locked} /></Field>
+        <Field label="Personales"><Textarea rows={2} value={form.antecedentes_personales} onChange={e => setForm({ ...form, antecedentes_personales: e.target.value })} disabled={readOnly} /></Field>
+        <Field label="Familiares"><Textarea rows={2} value={form.antecedentes_familiares} onChange={e => setForm({ ...form, antecedentes_familiares: e.target.value })} disabled={readOnly} /></Field>
+        <Field label="Quirúrgicos"><Textarea rows={2} value={form.antecedentes_quirurgicos} onChange={e => setForm({ ...form, antecedentes_quirurgicos: e.target.value })} disabled={readOnly} /></Field>
+        <Field label="Hábitos psicobiológicos"><Textarea rows={2} value={form.habitos_psicobiologicos} onChange={e => setForm({ ...form, habitos_psicobiologicos: e.target.value })} disabled={readOnly} /></Field>
       </Section>
 
       <Section title="Antecedentes ginecobstétricos">
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 col-span-full">
           {(["gesta", "para", "abortos", "cesareas", "partos"] as const).map(k => (
             <div key={k}><Label className="capitalize text-xs">{k}</Label>
-              <Input inputMode="numeric" value={form.gineco[k]} disabled={locked}
+              <Input inputMode="numeric" value={form.gineco[k]} disabled={readOnly}
                 onChange={e => setForm({ ...form, gineco: { ...form.gineco, [k]: e.target.value } })} />
             </div>
           ))}
         </div>
         <Field label="Evolución de embarazos previos / patologías" wide>
-          <Textarea rows={3} value={form.gineco.detalles} disabled={locked}
+          <Textarea rows={3} value={form.gineco.detalles} disabled={readOnly}
             onChange={e => setForm({ ...form, gineco: { ...form.gineco, detalles: e.target.value } })} />
         </Field>
       </Section>
 
       <Section title="Examen físico de ingreso">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 col-span-full">
-          <div><Label className="text-xs">TA (mmHg)</Label><Input placeholder="120/80" value={form.ef.ta} disabled={locked} onChange={e => setForm({ ...form, ef: { ...form.ef, ta: e.target.value } })} /></div>
+          <div><Label className="text-xs">TA (mmHg)</Label><Input placeholder="120/80" value={form.ef.ta} disabled={readOnly} onChange={e => setForm({ ...form, ef: { ...form.ef, ta: e.target.value } })} /></div>
           <div><Label className="text-xs">TAM</Label><Input disabled value={tam ?? ""} /></div>
-          <div><Label className="text-xs">FC</Label><Input inputMode="numeric" value={form.ef.fc} disabled={locked} onChange={e => setForm({ ...form, ef: { ...form.ef, fc: e.target.value } })} /></div>
-          <div><Label className="text-xs">FR</Label><Input inputMode="numeric" value={form.ef.fr} disabled={locked} onChange={e => setForm({ ...form, ef: { ...form.ef, fr: e.target.value } })} /></div>
-          <div><Label className="text-xs">T° (°C)</Label><Input value={form.ef.temp} disabled={locked} onChange={e => setForm({ ...form, ef: { ...form.ef, temp: e.target.value } })} /></div>
-          <div><Label className="text-xs">SatO₂ (%)</Label><Input value={form.ef.sato2} disabled={locked} onChange={e => setForm({ ...form, ef: { ...form.ef, sato2: e.target.value } })} /></div>
-          <div><Label className="text-xs">Peso (kg)</Label><Input value={form.ef.peso} disabled={locked} onChange={e => setForm({ ...form, ef: { ...form.ef, peso: e.target.value } })} /></div>
-          <div><Label className="text-xs">Talla (cm)</Label><Input value={form.ef.talla} disabled={locked} onChange={e => setForm({ ...form, ef: { ...form.ef, talla: e.target.value } })} /></div>
+          <div><Label className="text-xs">FC</Label><Input inputMode="numeric" value={form.ef.fc} disabled={readOnly} onChange={e => setForm({ ...form, ef: { ...form.ef, fc: e.target.value } })} /></div>
+          <div><Label className="text-xs">FR</Label><Input inputMode="numeric" value={form.ef.fr} disabled={readOnly} onChange={e => setForm({ ...form, ef: { ...form.ef, fr: e.target.value } })} /></div>
+          <div><Label className="text-xs">T° (°C)</Label><Input value={form.ef.temp} disabled={readOnly} onChange={e => setForm({ ...form, ef: { ...form.ef, temp: e.target.value } })} /></div>
+          <div><Label className="text-xs">SatO₂ (%)</Label><Input value={form.ef.sato2} disabled={readOnly} onChange={e => setForm({ ...form, ef: { ...form.ef, sato2: e.target.value } })} /></div>
+          <div><Label className="text-xs">Peso (kg)</Label><Input value={form.ef.peso} disabled={readOnly} onChange={e => setForm({ ...form, ef: { ...form.ef, peso: e.target.value } })} /></div>
+          <div><Label className="text-xs">Talla (cm)</Label><Input value={form.ef.talla} disabled={readOnly} onChange={e => setForm({ ...form, ef: { ...form.ef, talla: e.target.value } })} /></div>
         </div>
         <Field label="Descripción del examen físico" wide>
-          <Textarea rows={3} value={form.ef.descripcion} disabled={locked} onChange={e => setForm({ ...form, ef: { ...form.ef, descripcion: e.target.value } })} />
+          <Textarea rows={3} value={form.ef.descripcion} disabled={readOnly} onChange={e => setForm({ ...form, ef: { ...form.ef, descripcion: e.target.value } })} />
         </Field>
       </Section>
 
       <Section title="Laboratorios e imagen al ingreso">
-        <Field label="Hallazgos descriptivos" wide><Textarea rows={3} value={form.labs_ingreso} disabled={locked} onChange={e => setForm({ ...form, labs_ingreso: e.target.value })} /></Field>
+        <Field label="Hallazgos descriptivos" wide><Textarea rows={3} value={form.labs_ingreso} disabled={readOnly} onChange={e => setForm({ ...form, labs_ingreso: e.target.value })} /></Field>
       </Section>
 
       <Section title="Diagnósticos">
-        <Field label="Impresión diagnóstica" wide><Textarea rows={3} value={form.impresion_diagnostica} disabled={locked} onChange={e => setForm({ ...form, impresion_diagnostica: e.target.value })} /></Field>
-        <Field label="Comentario (conducta, justificación)" wide><Textarea rows={3} value={form.comentario_ingreso} disabled={locked} onChange={e => setForm({ ...form, comentario_ingreso: e.target.value })} /></Field>
+        <Field label="Impresión diagnóstica" wide><Textarea rows={3} value={form.impresion_diagnostica} disabled={readOnly} onChange={e => setForm({ ...form, impresion_diagnostica: e.target.value })} /></Field>
+        <Field label="Comentario (conducta, justificación)" wide><Textarea rows={3} value={form.comentario_ingreso} disabled={readOnly} onChange={e => setForm({ ...form, comentario_ingreso: e.target.value })} /></Field>
       </Section>
 
       {!locked && (
@@ -152,7 +152,7 @@ export function Tab1Frontal({ admission, patient }: { admission: any; patient: a
       <Section title="Diagnósticos de egreso">
         <Field label="Diagnóstico de egreso" wide>
           <Textarea rows={2} value={form.diagnostico_egreso}
-            disabled={locked}
+            disabled={readOnly}
             onChange={e => setForm({ ...form, diagnostico_egreso: e.target.value })} />
         </Field>
         {locked ? (
