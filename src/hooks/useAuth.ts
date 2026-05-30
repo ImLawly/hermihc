@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { SUPERUSER_ID } from "@/lib/superuser";
+
 
 export type AppRole = "admin" | "especialista" | "r3" | "r2" | "r1" | "enfermeria" | "traslado";
 export type ServiceType =
