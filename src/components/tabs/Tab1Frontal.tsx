@@ -172,7 +172,7 @@ export function Tab1Frontal({ admission, patient }: { admission: any; patient: a
         <Field label="Comentario (conducta, justificación)" wide><Textarea rows={3} value={form.comentario_ingreso} disabled={readOnly} onChange={e => setForm({ ...form, comentario_ingreso: e.target.value })} /></Field>
       </Section>
 
-      {!locked && (
+      {!locked && editing && (
         <div className="flex flex-wrap gap-2 justify-end sticky bottom-0 bg-background/95 backdrop-blur py-2 -mx-4 px-4 border-t">
           <Button variant="outline" onClick={() => save.mutate()} disabled={save.isPending}>Guardar</Button>
           {auth.canReview && admission.record_status === "pendiente_revision" && (
