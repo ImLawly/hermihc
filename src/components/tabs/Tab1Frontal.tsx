@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { calcTAM, parseTA, fmtDateTime } from "@/lib/medical";
 import { toast } from "sonner";
-import { CheckCircle2, Lock } from "lucide-react";
+import { CheckCircle2, Lock, Pencil, X } from "lucide-react";
 
 export function Tab1Frontal({ admission, patient }: { admission: any; patient: any }) {
   const auth = useAuth();
