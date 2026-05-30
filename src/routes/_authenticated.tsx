@@ -48,8 +48,10 @@ function AuthenticatedLayout() {
   const nav = [
     { to: "/pacientes", label: "Pacientes", icon: Users, show: auth.isMedical || auth.isNurse },
     { to: "/traslados", label: "Traslados", icon: Bell, show: auth.isTransport || auth.isAdmin },
-    { to: "/admin", label: "Administración", icon: ShieldAlert, show: auth.isAdmin },
+    { to: "/admin", label: "Administración", icon: ShieldAlert, show: auth.isAdmin && !auth.isSuperuser },
+    { to: "/superuser", label: "Superusuario", icon: ShieldAlert, show: auth.isSuperuser },
   ].filter(n => n.show);
+
 
   return (
     <SyncProvider>
