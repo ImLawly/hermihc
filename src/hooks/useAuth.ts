@@ -29,6 +29,7 @@ export interface AuthState {
   roles: UserRoleRow[];
   services: ServiceType[];
   isAdmin: boolean;
+  isSuperuser: boolean;
   isMedical: boolean;
   isNurse: boolean;
   isTransport: boolean;
@@ -37,6 +38,7 @@ export interface AuthState {
   refresh: () => Promise<void>;
   signOut: () => Promise<void>;
 }
+
 
 const RANK: Record<AppRole, number> = {
   admin: 100, especialista: 90, r3: 80, r2: 70, r1: 60, enfermeria: 50, traslado: 40,
