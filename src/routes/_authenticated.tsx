@@ -11,8 +11,9 @@ import { SyncProvider } from "@/lib/offline/SyncProvider";
 
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async () => {
-    const { data } = await supabase.auth.getUser();
-    if (!data.user) throw redirect({ to: "/login" });
+    if (typeof window === "undefined") return;
+    const { data } = await supabase.auth.getSession();
+    if (!data.session) throw redirect({ to: "/login" });
   },
   component: AuthenticatedLayout,
 });
