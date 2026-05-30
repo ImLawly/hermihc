@@ -85,6 +85,40 @@ export function Tab1Frontal({ admission, patient }: { admission: any; patient: a
 
   return (
     <div className="space-y-5">
+      {!locked && auth.isMedical && (
+        <div className="flex items-center justify-between bg-card border rounded-xl px-3 py-2">
+          <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+            {editing ? <Pencil className="w-3.5 h-3.5 text-[color:var(--tab-active)]" /> : <Lock className="w-3.5 h-3.5" />}
+            {editing ? "Modo edición — recuerda Guardar al terminar" : "Modo solo lectura"}
+          </p>
+          {editing ? (
+            <Button size="sm" variant="outline" onClick={() => {
+              // reset form to original admission data and exit edit mode
+              setForm({
+                motivo_consulta: admission.motivo_consulta ?? "",
+                historia_enfermedad_actual: admission.historia_enfermedad_actual ?? "",
+                antecedentes_personales: admission.antecedentes_personales ?? "",
+                antecedentes_familiares: admission.antecedentes_familiares ?? "",
+                antecedentes_quirurgicos: admission.antecedentes_quirurgicos ?? "",
+                habitos_psicobiologicos: admission.habitos_psicobiologicos ?? "",
+                gineco: admission.antecedentes_ginecobstetricos ?? { gesta: "", para: "", abortos: "", cesareas: "", partos: "", detalles: "" },
+                ef: admission.examen_fisico ?? { ta: "", fc: "", fr: "", temp: "", sato2: "", peso: "", talla: "", descripcion: "" },
+                labs_ingreso: admission.labs_ingreso ?? "",
+                impresion_diagnostica: admission.impresion_diagnostica ?? "",
+                comentario_ingreso: admission.comentario_ingreso ?? "",
+                diagnostico_egreso: admission.diagnostico_egreso ?? "",
+              });
+              setEditing(false);
+            }}>
+              <X className="w-3.5 h-3.5 mr-1" /> Cancelar edición
+            </Button>
+          ) : (
+            <Button size="sm" onClick={() => setEditing(true)}>
+              <Pencil className="w-3.5 h-3.5 mr-1" /> Editar
+            </Button>
+          )}
+        </div>
+      )}
       <Section title="Datos de ingreso">
         <Field label="Fecha y hora de ingreso"><Input type="text" disabled value={fmtDateTime(admission.admission_date)} /></Field>
         <Field label="Motivo de consulta"><Textarea rows={2} value={form.motivo_consulta} onChange={e => setForm({ ...form, motivo_consulta: e.target.value })} disabled={readOnly} /></Field>
