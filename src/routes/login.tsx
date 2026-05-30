@@ -60,7 +60,7 @@ function LoginPage() {
           <form onSubmit={handleEmail} className="space-y-3">
             <div>
               <Label htmlFor="email">Correo</Label>
-              <Input id="email" type="email" required value={email} onChange={e => setEmail(e.target.value)} autoComplete="email" />
+              <Input id="email" type="text" required value={email} onChange={e => setEmail(e.target.value)} autoComplete="username" placeholder="correo o usuario" />
             </div>
             <div>
               <Label htmlFor="pwd">Contraseña</Label>
