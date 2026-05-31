@@ -153,7 +153,7 @@ function MyPasswordCard() {
         <div className="mt-3 flex gap-2 items-end flex-wrap">
           <div className="flex-1 min-w-[200px]">
             <label className="text-xs text-muted-foreground">Nueva contraseña</label>
-            <Input type="text" value={pwd} onChange={(e) => setPwd(e.target.value)} placeholder="Mínimo 6 caracteres" />
+            <Input type="password" value={pwd} onChange={(e) => setPwd(e.target.value)} placeholder="Mínimo 6 caracteres" />
           </div>
           <Button size="sm" disabled={m.isPending} onClick={() => {
             if (pwd.length < 6) return toast.error("Mínimo 6 caracteres");
