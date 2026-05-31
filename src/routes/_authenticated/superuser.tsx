@@ -23,16 +23,12 @@ function SuperPage() {
   const auth = useAuth();
   const router = useRouter();
 
-  if (auth.loading) return null;
-  if (!auth.isSuperuser) {
-    return <p className="text-sm text-muted-foreground">Acceso restringido.</p>;
-  }
-
   const fetchUsers = useServerFn(listAllUsers);
   const qc = useQueryClient();
   const { data: users, isLoading } = useQuery({
     queryKey: ["super-users"],
     queryFn: () => fetchUsers(),
+    enabled: !!auth.isSuperuser,
   });
 
   const [search, setSearch] = useState("");
