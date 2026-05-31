@@ -1,4 +1,4 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute, useRouter, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useAuth } from "@/hooks/useAuth";
@@ -7,11 +7,12 @@ import {
   deleteUserBySuper,
   changeUserPassword,
   toggleApproveBySuper,
+  changeMyPassword,
 } from "@/lib/superuser.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Shield, Trash2, KeyRound, Check, X } from "lucide-react";
+import { Shield, Trash2, KeyRound, Check, X, ScrollText } from "lucide-react";
 import { useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/superuser")({
@@ -84,16 +85,24 @@ function SuperPage() {
             Control total. {users?.length ?? 0} usuarios en el sistema.
           </p>
         </div>
-        <Button
-          variant="outline"
-          onClick={async () => {
-            await auth.signOut();
-            router.navigate({ to: "/login" });
-          }}
-        >
-          Cerrar sesión
-        </Button>
+        <div className="flex gap-2">
+          <Button asChild variant="outline">
+            <Link to="/superuser/audit"><ScrollText className="w-4 h-4 mr-1" /> Auditoría</Link>
+          </Button>
+          <Button
+            variant="outline"
+            onClick={async () => {
+              await auth.signOut();
+              router.navigate({ to: "/login" });
+            }}
+          >
+            Cerrar sesión
+          </Button>
+        </div>
       </div>
+
+      <MyPasswordCard />
+
 
       <Input
         placeholder="Buscar por nombre o correo…"
@@ -121,6 +130,41 @@ function SuperPage() {
     </div>
   );
 }
+
+function MyPasswordCard() {
+  const fn = useServerFn(changeMyPassword);
+  const [pwd, setPwd] = useState("");
+  const [open, setOpen] = useState(false);
+  const m = useMutation({
+    mutationFn: (password: string) => fn({ data: { password } }),
+    onSuccess: () => { toast.success("Tu contraseña fue actualizada"); setPwd(""); setOpen(false); },
+    onError: (e: Error) => toast.error(e.message),
+  });
+  return (
+    <div className="bg-card border rounded-xl p-4 mb-4">
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <div>
+          <p className="font-semibold text-sm flex items-center gap-2"><KeyRound className="w-4 h-4" /> Mi contraseña</p>
+          <p className="text-xs text-muted-foreground">Cambia la clave del superusuario.</p>
+        </div>
+        <Button size="sm" variant="outline" onClick={() => setOpen(v => !v)}>{open ? "Cancelar" : "Cambiar"}</Button>
+      </div>
+      {open && (
+        <div className="mt-3 flex gap-2 items-end flex-wrap">
+          <div className="flex-1 min-w-[200px]">
+            <label className="text-xs text-muted-foreground">Nueva contraseña</label>
+            <Input type="text" value={pwd} onChange={(e) => setPwd(e.target.value)} placeholder="Mínimo 6 caracteres" />
+          </div>
+          <Button size="sm" disabled={m.isPending} onClick={() => {
+            if (pwd.length < 6) return toast.error("Mínimo 6 caracteres");
+            m.mutate(pwd);
+          }}>Guardar</Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 
 function UserRow({
   u,
