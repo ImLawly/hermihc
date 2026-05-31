@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { SUPERUSER_ID } from "./superuser";
+import { SUPERUSER_ID } from "./superuser.server";
 import { z } from "zod";
 
 function assertSuper(userId: string) {
