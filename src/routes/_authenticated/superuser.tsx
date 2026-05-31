@@ -131,6 +131,41 @@ function SuperPage() {
   );
 }
 
+function MyPasswordCard() {
+  const fn = useServerFn(changeMyPassword);
+  const [pwd, setPwd] = useState("");
+  const [open, setOpen] = useState(false);
+  const m = useMutation({
+    mutationFn: (password: string) => fn({ data: { password } }),
+    onSuccess: () => { toast.success("Tu contraseña fue actualizada"); setPwd(""); setOpen(false); },
+    onError: (e: Error) => toast.error(e.message),
+  });
+  return (
+    <div className="bg-card border rounded-xl p-4 mb-4">
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <div>
+          <p className="font-semibold text-sm flex items-center gap-2"><KeyRound className="w-4 h-4" /> Mi contraseña</p>
+          <p className="text-xs text-muted-foreground">Cambia la clave del superusuario.</p>
+        </div>
+        <Button size="sm" variant="outline" onClick={() => setOpen(v => !v)}>{open ? "Cancelar" : "Cambiar"}</Button>
+      </div>
+      {open && (
+        <div className="mt-3 flex gap-2 items-end flex-wrap">
+          <div className="flex-1 min-w-[200px]">
+            <label className="text-xs text-muted-foreground">Nueva contraseña</label>
+            <Input type="text" value={pwd} onChange={(e) => setPwd(e.target.value)} placeholder="Mínimo 6 caracteres" />
+          </div>
+          <Button size="sm" disabled={m.isPending} onClick={() => {
+            if (pwd.length < 6) return toast.error("Mínimo 6 caracteres");
+            m.mutate(pwd);
+          }}>Guardar</Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
 function UserRow({
   u,
   onDelete,
