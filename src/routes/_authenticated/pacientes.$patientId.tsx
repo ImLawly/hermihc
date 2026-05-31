@@ -229,7 +229,7 @@ function PatientDetail() {
               <button key={t.id} className="med-tab" data-active={tab === t.id} onClick={() => setTab(t.id)}>{t.label}</button>
             ))}
           </div>
-          <div>
+          <div key={admission.id}>
             {tab === "frontal" && <Tab1Frontal admission={admission} patient={patient} />}
             {tab === "evoluciones" && <Tab2Evoluciones admission={admission} />}
             {tab === "ordenes" && <Tab3Ordenes admission={admission} />}
