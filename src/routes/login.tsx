@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
-import { SUPERUSER_USERNAME, SUPERUSER_EMAIL } from "@/lib/superuser";
+import { resolveLoginEmail } from "@/lib/auth.functions";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,9 +24,13 @@ function LoginPage() {
   const handleEmail = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const loginEmail = email.trim().toLowerCase() === SUPERUSER_USERNAME.toLowerCase()
-      ? SUPERUSER_EMAIL
-      : email.trim();
+    let loginEmail = email.trim();
+    try {
+      const r = await resolveLoginEmail({ data: { identifier: loginEmail } });
+      loginEmail = r.email;
+    } catch {
+      // fall back to typed value
+    }
     const { error } = await supabase.auth.signInWithPassword({ email: loginEmail, password });
     setLoading(false);
     if (error) { toast.error(error.message); return; }

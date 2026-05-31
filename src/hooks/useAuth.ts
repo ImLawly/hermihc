@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { SUPERUSER_ID } from "@/lib/superuser";
+import { checkIsSuperuser } from "@/lib/auth.functions";
 
 
 export type AppRole = "admin" | "especialista" | "r3" | "r2" | "r1" | "enfermeria" | "traslado";
@@ -49,16 +49,19 @@ export function useAuth(): AuthState {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<ProfileRow | null>(null);
   const [roles, setRoles] = useState<UserRoleRow[]>([]);
+  const [isSuperuser, setIsSuperuser] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const loadAll = async (u: User | null) => {
-    if (!u) { setProfile(null); setRoles([]); return; }
-    const [{ data: p }, { data: r }] = await Promise.all([
+    if (!u) { setProfile(null); setRoles([]); setIsSuperuser(false); return; }
+    const [{ data: p }, { data: r }, suRes] = await Promise.all([
       supabase.from("profiles").select("*").eq("id", u.id).maybeSingle(),
       supabase.from("user_roles").select("role,service").eq("user_id", u.id),
+      checkIsSuperuser().catch(() => ({ isSuperuser: false })),
     ]);
     setProfile((p as ProfileRow) ?? null);
     setRoles((r as UserRoleRow[]) ?? []);
+    setIsSuperuser(!!suRes?.isSuperuser);
   };
 
   useEffect(() => {
@@ -80,7 +83,6 @@ export function useAuth(): AuthState {
 
   const services = Array.from(new Set(roles.map(r => r.service).filter(Boolean))) as ServiceType[];
   const has = (r: AppRole) => roles.some(x => x.role === r);
-  const isSuperuser = !!user && user.id === SUPERUSER_ID;
   const isAdmin = has("admin") || isSuperuser;
   const isMedical = isAdmin || has("especialista") || has("r3") || has("r2") || has("r1");
   const isNurse = has("enfermeria");
