@@ -69,3 +69,77 @@ export const toggleApproveBySuper = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+export const changeMyPassword = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ password: z.string().min(6).max(128) }).parse(d))
+  .handler(async ({ context, data }) => {
+    assertSuper(context.userId);
+    const { error } = await supabaseAdmin.auth.admin.updateUserById(context.userId, {
+      password: data.password,
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const deletePatientBySuper = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ patientId: z.string().uuid() }).parse(d))
+  .handler(async ({ context, data }) => {
+    assertSuper(context.userId);
+    // delete dependent rows then patient (no FK cascades defined)
+    const { data: adms } = await supabaseAdmin
+      .from("admissions").select("id").eq("patient_id", data.patientId);
+    const admIds = (adms ?? []).map(a => a.id);
+    if (admIds.length) {
+      const childTables = [
+        "evolutions", "medical_orders", "monitoring_entries", "lab_results",
+        "interconsultations", "clinical_notes", "delivery_notes", "operative_notes",
+      ] as const;
+      // delete order_administrations via orders
+      const { data: orders } = await supabaseAdmin
+        .from("medical_orders").select("id").in("admission_id", admIds);
+      const orderIds = (orders ?? []).map(o => o.id);
+      if (orderIds.length) {
+        await supabaseAdmin.from("order_administrations").delete().in("order_id", orderIds);
+      }
+      for (const t of childTables) {
+        await supabaseAdmin.from(t).delete().in("admission_id", admIds);
+      }
+      await supabaseAdmin.from("admissions").delete().in("id", admIds);
+    }
+    await supabaseAdmin.from("patient_transfers").delete().eq("patient_id", data.patientId);
+    const { error } = await supabaseAdmin.from("patients").delete().eq("id", data.patientId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const listAuditLogs = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) =>
+    z.object({
+      userId: z.string().uuid().optional(),
+      table: z.string().max(64).optional(),
+      limit: z.number().int().min(1).max(500).default(200),
+    }).parse(d ?? {}),
+  )
+  .handler(async ({ context, data }) => {
+    assertSuper(context.userId);
+    let q = supabaseAdmin
+      .from("audit_logs")
+      .select("id, table_name, row_id, operation, user_id, performed_at")
+      .order("performed_at", { ascending: false })
+      .limit(data.limit);
+    if (data.userId) q = q.eq("user_id", data.userId);
+    if (data.table) q = q.eq("table_name", data.table);
+    const { data: logs, error } = await q;
+    if (error) throw new Error(error.message);
+    const userIds = Array.from(new Set((logs ?? []).map(l => l.user_id).filter(Boolean))) as string[];
+    const { data: profs } = userIds.length
+      ? await supabaseAdmin.from("profiles").select("id, full_name").in("id", userIds)
+      : { data: [] as { id: string; full_name: string }[] };
+    return (logs ?? []).map(l => ({
+      ...l,
+      user_name: profs?.find(p => p.id === l.user_id)?.full_name ?? null,
+    }));
+  });

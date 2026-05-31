@@ -1,4 +1,4 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { createFileRoute, useRouter, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useAuth } from "@/hooks/useAuth";
@@ -7,11 +7,12 @@ import {
   deleteUserBySuper,
   changeUserPassword,
   toggleApproveBySuper,
+  changeMyPassword,
 } from "@/lib/superuser.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Shield, Trash2, KeyRound, Check, X } from "lucide-react";
+import { Shield, Trash2, KeyRound, Check, X, ScrollText } from "lucide-react";
 import { useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/superuser")({
