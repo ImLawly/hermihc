@@ -85,16 +85,24 @@ function SuperPage() {
             Control total. {users?.length ?? 0} usuarios en el sistema.
           </p>
         </div>
-        <Button
-          variant="outline"
-          onClick={async () => {
-            await auth.signOut();
-            router.navigate({ to: "/login" });
-          }}
-        >
-          Cerrar sesión
-        </Button>
+        <div className="flex gap-2">
+          <Button asChild variant="outline">
+            <Link to="/superuser/audit"><ScrollText className="w-4 h-4 mr-1" /> Auditoría</Link>
+          </Button>
+          <Button
+            variant="outline"
+            onClick={async () => {
+              await auth.signOut();
+              router.navigate({ to: "/login" });
+            }}
+          >
+            Cerrar sesión
+          </Button>
+        </div>
       </div>
+
+      <MyPasswordCard />
+
 
       <Input
         placeholder="Buscar por nombre o correo…"
