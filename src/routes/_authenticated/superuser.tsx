@@ -66,6 +66,13 @@ function SuperPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  if (auth.loading) return null;
+  if (!auth.isSuperuser) {
+    return <p className="text-sm text-muted-foreground">Acceso restringido.</p>;
+  }
+
+
+
   return (
     <div>
       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
