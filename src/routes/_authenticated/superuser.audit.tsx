@@ -68,13 +68,7 @@ function AuditPage() {
           </thead>
           <tbody>
             {(logs ?? []).map(l => (
-              <tr key={l.id} className="border-t">
-                <td className="p-2 text-xs whitespace-nowrap">{new Date(l.performed_at).toLocaleString()}</td>
-                <td className="p-2 text-xs">{l.user_name ?? <span className="text-muted-foreground">{l.user_id?.slice(0, 8) ?? "—"}</span>}</td>
-                <td className="p-2"><span className="text-[10px] rounded-full bg-accent px-2 py-0.5">{l.operation}</span></td>
-                <td className="p-2 text-xs">{l.table_name}</td>
-                <td className="p-2 text-[10px] text-muted-foreground font-mono">{l.row_id?.slice(0, 8) ?? "—"}</td>
-              </tr>
+              <AuditRow key={l.id} log={l} />
             ))}
             {(logs ?? []).length === 0 && !isLoading && (
               <tr><td colSpan={5} className="p-6 text-center text-sm text-muted-foreground">Sin registros.</td></tr>
@@ -84,4 +78,58 @@ function AuditPage() {
       </div>
     </div>
   );
+}
+
+function AuditRow({ log }: { log: any }) {
+  const [open, setOpen] = useState(false);
+  const diff = computeDiff(log.before_data, log.after_data);
+  return (
+    <>
+      <tr className="border-t hover:bg-muted/30 cursor-pointer" onClick={() => setOpen(v => !v)}>
+        <td className="p-2 text-xs whitespace-nowrap">{new Date(log.performed_at).toLocaleString()}</td>
+        <td className="p-2 text-xs">{log.user_name ?? <span className="text-muted-foreground">{log.user_id?.slice(0, 8) ?? "—"}</span>}</td>
+        <td className="p-2"><span className="text-[10px] rounded-full bg-accent px-2 py-0.5">{log.operation}</span></td>
+        <td className="p-2 text-xs">{log.table_name}</td>
+        <td className="p-2 text-[10px] text-muted-foreground font-mono">{log.row_id?.slice(0, 8) ?? "—"}</td>
+      </tr>
+      {open && (
+        <tr className="bg-muted/20">
+          <td colSpan={5} className="p-3 text-[11px]">
+            {diff.length === 0 ? (
+              <pre className="overflow-x-auto">{JSON.stringify(log.after_data ?? log.before_data, null, 2)}</pre>
+            ) : (
+              <table className="w-full">
+                <thead className="text-muted-foreground"><tr><th className="text-left">Campo</th><th className="text-left">Antes</th><th className="text-left">Después</th></tr></thead>
+                <tbody>
+                  {diff.map(d => (
+                    <tr key={d.key} className="border-t border-border/40">
+                      <td className="py-1 pr-2 font-mono">{d.key}</td>
+                      <td className="py-1 pr-2 text-red-600 break-all">{fmt(d.before)}</td>
+                      <td className="py-1 pr-2 text-green-600 break-all">{fmt(d.after)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </td>
+        </tr>
+      )}
+    </>
+  );
+}
+
+function fmt(v: unknown) {
+  if (v === null || v === undefined) return "—";
+  if (typeof v === "object") return JSON.stringify(v);
+  return String(v);
+}
+
+function computeDiff(before: any, after: any) {
+  const keys = new Set([...Object.keys(before ?? {}), ...Object.keys(after ?? {})]);
+  const out: { key: string; before: any; after: any }[] = [];
+  for (const k of keys) {
+    const b = before?.[k]; const a = after?.[k];
+    if (JSON.stringify(b) !== JSON.stringify(a)) out.push({ key: k, before: b, after: a });
+  }
+  return out;
 }
