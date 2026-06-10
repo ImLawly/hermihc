@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { fmtDateTime, toLocalInputValue } from "@/lib/medical";
 import { toast } from "sonner";
 import { Plus, CheckCircle2, Check, X } from "lucide-react";
+import { AuthorStamp } from "@/components/AuthorStamp";
 
 interface OrderItem { n: number; text: string; medication?: string; dose?: string; route?: string; times?: string[]; }
 
@@ -185,6 +186,13 @@ function OrderBlock({ order }: { order: any }) {
           </Button>
         </div>
       )}
+      <AuthorStamp
+        userId={order.created_by}
+        date={order.created_at}
+        label="Orden por"
+        reviewerId={order.reviewed_by}
+        reviewedAt={order.reviewed_at}
+      />
     </div>
   );
 }

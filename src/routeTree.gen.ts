@@ -17,6 +17,7 @@ import { Route as AuthenticatedTrasladosRouteImport } from './routes/_authentica
 import { Route as AuthenticatedSuperuserRouteImport } from './routes/_authenticated/superuser'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedPacientesIndexRouteImport } from './routes/_authenticated/pacientes.index'
+import { Route as AuthenticatedSuperuserEstadoSistemaRouteImport } from './routes/_authenticated/superuser.estado-sistema'
 import { Route as AuthenticatedSuperuserAuditRouteImport } from './routes/_authenticated/superuser.audit'
 import { Route as AuthenticatedPacientesNuevoRouteImport } from './routes/_authenticated/pacientes.nuevo'
 import { Route as AuthenticatedPacientesPatientIdRouteImport } from './routes/_authenticated/pacientes.$patientId'
@@ -61,6 +62,12 @@ const AuthenticatedPacientesIndexRoute =
     path: '/pacientes/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedSuperuserEstadoSistemaRoute =
+  AuthenticatedSuperuserEstadoSistemaRouteImport.update({
+    id: '/estado-sistema',
+    path: '/estado-sistema',
+    getParentRoute: () => AuthenticatedSuperuserRoute,
+  } as any)
 const AuthenticatedSuperuserAuditRoute =
   AuthenticatedSuperuserAuditRouteImport.update({
     id: '/audit',
@@ -90,6 +97,7 @@ export interface FileRoutesByFullPath {
   '/pacientes/$patientId': typeof AuthenticatedPacientesPatientIdRoute
   '/pacientes/nuevo': typeof AuthenticatedPacientesNuevoRoute
   '/superuser/audit': typeof AuthenticatedSuperuserAuditRoute
+  '/superuser/estado-sistema': typeof AuthenticatedSuperuserEstadoSistemaRoute
   '/pacientes/': typeof AuthenticatedPacientesIndexRoute
 }
 export interface FileRoutesByTo {
@@ -102,6 +110,7 @@ export interface FileRoutesByTo {
   '/pacientes/$patientId': typeof AuthenticatedPacientesPatientIdRoute
   '/pacientes/nuevo': typeof AuthenticatedPacientesNuevoRoute
   '/superuser/audit': typeof AuthenticatedSuperuserAuditRoute
+  '/superuser/estado-sistema': typeof AuthenticatedSuperuserEstadoSistemaRoute
   '/pacientes': typeof AuthenticatedPacientesIndexRoute
 }
 export interface FileRoutesById {
@@ -116,6 +125,7 @@ export interface FileRoutesById {
   '/_authenticated/pacientes/$patientId': typeof AuthenticatedPacientesPatientIdRoute
   '/_authenticated/pacientes/nuevo': typeof AuthenticatedPacientesNuevoRoute
   '/_authenticated/superuser/audit': typeof AuthenticatedSuperuserAuditRoute
+  '/_authenticated/superuser/estado-sistema': typeof AuthenticatedSuperuserEstadoSistemaRoute
   '/_authenticated/pacientes/': typeof AuthenticatedPacientesIndexRoute
 }
 export interface FileRouteTypes {
@@ -130,6 +140,7 @@ export interface FileRouteTypes {
     | '/pacientes/$patientId'
     | '/pacientes/nuevo'
     | '/superuser/audit'
+    | '/superuser/estado-sistema'
     | '/pacientes/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -142,6 +153,7 @@ export interface FileRouteTypes {
     | '/pacientes/$patientId'
     | '/pacientes/nuevo'
     | '/superuser/audit'
+    | '/superuser/estado-sistema'
     | '/pacientes'
   id:
     | '__root__'
@@ -155,6 +167,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pacientes/$patientId'
     | '/_authenticated/pacientes/nuevo'
     | '/_authenticated/superuser/audit'
+    | '/_authenticated/superuser/estado-sistema'
     | '/_authenticated/pacientes/'
   fileRoutesById: FileRoutesById
 }
@@ -223,6 +236,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPacientesIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/superuser/estado-sistema': {
+      id: '/_authenticated/superuser/estado-sistema'
+      path: '/estado-sistema'
+      fullPath: '/superuser/estado-sistema'
+      preLoaderRoute: typeof AuthenticatedSuperuserEstadoSistemaRouteImport
+      parentRoute: typeof AuthenticatedSuperuserRoute
+    }
     '/_authenticated/superuser/audit': {
       id: '/_authenticated/superuser/audit'
       path: '/audit'
@@ -249,11 +269,14 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedSuperuserRouteChildren {
   AuthenticatedSuperuserAuditRoute: typeof AuthenticatedSuperuserAuditRoute
+  AuthenticatedSuperuserEstadoSistemaRoute: typeof AuthenticatedSuperuserEstadoSistemaRoute
 }
 
 const AuthenticatedSuperuserRouteChildren: AuthenticatedSuperuserRouteChildren =
   {
     AuthenticatedSuperuserAuditRoute: AuthenticatedSuperuserAuditRoute,
+    AuthenticatedSuperuserEstadoSistemaRoute:
+      AuthenticatedSuperuserEstadoSistemaRoute,
   }
 
 const AuthenticatedSuperuserRouteWithChildren =

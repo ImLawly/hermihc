@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Shield, Trash2, KeyRound, Check, X, ScrollText } from "lucide-react";
+import { Shield, Trash2, KeyRound, Check, X, ScrollText, ListChecks } from "lucide-react";
 import { useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/superuser")({
@@ -88,6 +88,9 @@ function SuperPage() {
         <div className="flex gap-2">
           <Button asChild variant="outline">
             <Link to="/superuser/audit"><ScrollText className="w-4 h-4 mr-1" /> Auditoría</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link to="/superuser/estado-sistema"><ListChecks className="w-4 h-4 mr-1" /> Estado</Link>
           </Button>
           <Button
             variant="outline"

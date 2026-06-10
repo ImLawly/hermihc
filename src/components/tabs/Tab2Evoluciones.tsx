@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { calcTAM, parseTA, fmtDateTime, timeSinceAdmission, toLocalInputValue } from "@/lib/medical";
 import { toast } from "sonner";
 import { CheckCircle2, Plus } from "lucide-react";
+import { AuthorStamp } from "@/components/AuthorStamp";
 
 export function Tab2Evoluciones({ admission }: { admission: any }) {
   const auth = useAuth();
@@ -130,6 +131,12 @@ function EvolutionCard({ ev, admissionDate, onChanged }: { ev: any; admissionDat
           </Button>
         </div>
       )}
+      <AuthorStamp
+        userId={ev.created_by}
+        date={ev.created_at}
+        reviewerId={ev.reviewed_by}
+        reviewedAt={ev.reviewed_at}
+      />
     </div>
   );
 }
