@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { fmtDateTime, toLocalInputValue, NOTE_TYPE_LABELS } from "@/lib/medical";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
+import { AuthorStamp } from "@/components/AuthorStamp";
 
 export function Tab6Notas({ admission }: { admission: any }) {
   const [section, setSection] = useState<"parto" | "operatoria" | "notas">("parto");
@@ -229,6 +230,7 @@ function NotesSection({ admission }: { admission: any }) {
           <div key={n.id} className="border rounded-lg p-3">
             <p className="text-xs text-muted-foreground">{NOTE_TYPE_LABELS[n.tipo as keyof typeof NOTE_TYPE_LABELS]} · {fmtDateTime(n.note_at)}</p>
             <p className="text-sm mt-1 whitespace-pre-wrap">{n.contenido}</p>
+            <AuthorStamp userId={n.created_by} date={n.created_at} label="Nota por" />
           </div>
         ))}
         {(notes ?? []).length === 0 && <p className="text-sm text-muted-foreground">Sin notas.</p>}
