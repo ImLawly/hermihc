@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import React, { useState, useMemo, Fragment } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { calcTAM, parseTA, fmtDateTime, toLocalInputValue } from "@/lib/medical";
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
+import { AuthorStamp } from "@/components/AuthorStamp";
 
 export function Tab4Monitoreo({ admission }: { admission: any }) {
   return (
@@ -52,12 +53,24 @@ function MonitoringSection({ admission }: { admission: any }) {
           </thead>
           <tbody>
             {(entries ?? []).map(m => (
-              <tr key={m.id} className="border-b last:border-0">
-                <td className="py-1.5 pr-2 whitespace-nowrap">{fmtDateTime(m.recorded_at)}</td>
-                <td className="px-2">{m.ta ?? "—"}</td><td className="px-2">{m.tam ?? "—"}</td>
-                <td className="px-2">{m.fc ?? "—"}</td><td className="px-2">{m.fr ?? "—"}</td><td className="px-2">{m.sato2 ?? "—"}</td>
-                <td className="px-2">{m.fcf ?? "—"}</td><td className="px-2">{m.du ?? "—"}</td><td className="px-2">{m.mf ?? "—"}</td>
-              </tr>
+              <Fragment key={m.id}>
+                <tr className="border-b">
+                  <td className="py-1.5 pr-2 whitespace-nowrap">{fmtDateTime(m.recorded_at)}</td>
+                  <td className="px-2">{m.ta ?? "—"}</td>
+                  <td className="px-2">{m.tam ?? "—"}</td>
+                  <td className="px-2">{m.fc ?? "—"}</td>
+                  <td className="px-2">{m.fr ?? "—"}</td>
+                  <td className="px-2">{m.sato2 ?? "—"}</td>
+                  <td className="px-2">{m.fcf ?? "—"}</td>
+                  <td className="px-2">{m.du ?? "—"}</td>
+                  <td className="px-2">{m.mf ?? "—"}</td>
+                </tr>
+                <tr>
+                  <td colSpan={9} className="pb-2">
+                    <AuthorStamp userId={m.performed_by} date={m.recorded_at} label="Registro por" />
+                  </td>
+                </tr>
+              </Fragment>
             ))}
             {(entries ?? []).length === 0 && <tr><td colSpan={9} className="py-3 text-center text-muted-foreground">Sin registros</td></tr>}
           </tbody>

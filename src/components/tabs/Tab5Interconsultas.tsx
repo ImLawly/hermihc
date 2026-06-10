@@ -11,6 +11,7 @@ import { fmtDateTime } from "@/lib/medical";
 import { toast } from "sonner";
 import { Plus, Send } from "lucide-react";
 import { sendPush } from "@/lib/push.functions";
+import { AuthorStamp } from "@/components/AuthorStamp";
 
 export function Tab5Interconsultas({ admission }: { admission: any }) {
   const auth = useAuth();
@@ -56,12 +57,14 @@ function NewInterconsult({ admission, onSaved }: { admission: any; onSaved: () =
       if (error) throw error;
       // In-app notification is created by DB trigger. Send push tickle too:
       try {
-        await push({ data: {
-          role: "especialista", service: target_service,
-          title: `Interconsulta a ${SERVICE_LABELS[target_service]}`,
-          body: comentario.slice(0, 120),
-          url: `/pacientes/${admission.patient_id}`,
-        }});
+        await push({
+          data: {
+            role: "especialista", service: target_service,
+            title: `Interconsulta a ${SERVICE_LABELS[target_service]}`,
+            body: comentario.slice(0, 120),
+            url: `/pacientes/${admission.patient_id}`,
+          }
+        });
       } catch { /* push failures are non-fatal */ }
     },
     onSuccess: () => { toast.success("Interconsulta enviada"); onSaved(); },
@@ -98,12 +101,14 @@ function InterCard({ item }: { item: any }) {
       } as any).eq("id", item.id);
       if (error) throw error;
       try {
-        await push({ data: {
-          user_id: item.created_by,
-          title: "Interconsulta respondida",
-          body: respuesta.slice(0, 120),
-          url: `/pacientes/${item.admission_id}`,
-        }});
+        await push({
+          data: {
+            user_id: item.created_by,
+            title: "Interconsulta respondida",
+            body: respuesta.slice(0, 120),
+            url: `/pacientes/${item.admission_id}`,
+          }
+        });
       } catch { /* non-fatal */ }
     },
     onSuccess: () => { toast.success("Respuesta enviada"); qc.invalidateQueries({ queryKey: ["interconsults", item.admission_id] }); },
@@ -114,6 +119,7 @@ function InterCard({ item }: { item: any }) {
     <div className="bg-card border rounded-xl p-4">
       <div className="flex justify-between flex-wrap gap-2 mb-2">
         <p className="text-xs text-muted-foreground">{fmtDateTime(item.created_at)} → <strong>{SERVICE_LABELS[item.target_service as ServiceType]}</strong></p>
+        <AuthorStamp userId={item.created_by} date={item.created_at} label="Creado por" />
         {item.responded_at && <span className="status-pill" data-tone="confirmed">Respondida</span>}
       </div>
       {item.diagnosticos && <p className="text-sm"><strong className="text-xs uppercase text-muted-foreground">Dx:</strong> {item.diagnosticos}</p>}
@@ -122,6 +128,7 @@ function InterCard({ item }: { item: any }) {
         <div className="mt-3 border-t pt-2">
           <p className="text-xs text-muted-foreground">Respuesta · {fmtDateTime(item.responded_at)}</p>
           <p className="text-sm">{item.respuesta}</p>
+          <AuthorStamp userId={item.responded_by} date={item.responded_at} label="Respondida por" />
         </div>
       ) : isTarget && auth.isMedical && (
         <div className="mt-3 border-t pt-2 space-y-2">
