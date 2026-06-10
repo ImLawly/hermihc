@@ -8,8 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { calcTAM, parseTA, fmtDateTime, timeSinceAdmission, toLocalInputValue } from "@/lib/medical";
 import { toast } from "sonner";
-import { CheckCircle2, Plus } from "lucide-react";
+import { CheckCircle2, Plus, Lock, Eye } from "lucide-react";
 import { AuthorStamp } from "@/components/AuthorStamp";
+import { useRecordLock, useAcquireLock } from "@/lib/recordLocks";
 
 export function Tab2Evoluciones({ admission }: { admission: any }) {
   const auth = useAuth();
@@ -94,6 +95,15 @@ function NewEvolutionForm({ admissionId, onSaved }: { admissionId: string; onSav
 
 function EvolutionCard({ ev, admissionDate, onChanged }: { ev: any; admissionDate: string; onChanged: () => void }) {
   const auth = useAuth();
+  const [reviewing, setReviewing] = useState(false);
+  const { lock, holderName } = useRecordLock("evolution", ev.id);
+  const isMine = auth.user?.id === ev.created_by;
+  const lockedByOther = !!lock && lock.locked_by !== auth.user?.id;
+  const confirmed = ev.record_status === "confirmado";
+
+  // Si soy revisor y abro "modo revisión", adquiero el lock
+  useAcquireLock("evolution", ev.id, reviewing && auth.canReview && !confirmed);
+
   const review = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.from("evolutions").update({
@@ -101,7 +111,7 @@ function EvolutionCard({ ev, admissionDate, onChanged }: { ev: any; admissionDat
       } as any).eq("id", ev.id);
       if (error) throw error;
     },
-    onSuccess: () => { toast.success("Evolución confirmada"); onChanged(); },
+    onSuccess: () => { toast.success("Evolución confirmada y publicada"); setReviewing(false); onChanged(); },
     onError: (e: Error) => toast.error(e.message),
   });
 
@@ -112,10 +122,31 @@ function EvolutionCard({ ev, admissionDate, onChanged }: { ev: any; admissionDat
           <p className="text-xs text-muted-foreground">{fmtDateTime(ev.evolution_at)} · {timeSinceAdmission(admissionDate, new Date(ev.evolution_at))} desde el ingreso</p>
           <p className="font-medium text-sm">{ev.diagnostico_actual || "Sin diagnóstico"}</p>
         </div>
-        <span className="status-pill" data-tone={ev.record_status === "confirmado" ? "confirmed" : "pending"}>
-          {ev.record_status === "confirmado" ? "Confirmado" : "Pendiente"}
+        <span className="status-pill" data-tone={confirmed ? "confirmed" : "pending"}>
+          {confirmed ? "Publicado" : "Borrador"}
         </span>
       </div>
+
+      {/* Aviso de bloqueo al autor R1 */}
+      {isMine && lockedByOther && !confirmed && (
+        <div className="mt-2 flex items-center gap-2 text-xs bg-amber-50 border border-amber-200 text-amber-800 rounded-md p-2">
+          <Lock className="w-3.5 h-3.5" />
+          En revisión por <strong>{holderName ?? "un revisor"}</strong> — solo lectura mientras dure la verificación.
+        </div>
+      )}
+      {/* Aviso al revisor mientras tiene el lock */}
+      {reviewing && !confirmed && (
+        <div className="mt-2 flex items-center gap-2 text-xs bg-blue-50 border border-blue-200 text-blue-800 rounded-md p-2">
+          <Eye className="w-3.5 h-3.5" />
+          Estás revisando esta evolución. El autor no puede modificarla hasta que la liberes o la confirmes.
+        </div>
+      )}
+      {confirmed && (
+        <p className="mt-2 text-[11px] text-muted-foreground italic">
+          Esta evolución fue publicada. Es inmutable.
+        </p>
+      )}
+
       {ev.subjetivo && <p className="text-sm mt-2"><strong className="text-xs uppercase text-muted-foreground">Subjetivo:</strong> {ev.subjetivo}</p>}
       {ev.objetivo && (
         <p className="text-xs mt-1 text-muted-foreground">
@@ -124,13 +155,24 @@ function EvolutionCard({ ev, admissionDate, onChanged }: { ev: any; admissionDat
       )}
       {ev.objetivo?.examen_fisico && <p className="text-sm mt-1">{ev.objetivo.examen_fisico}</p>}
       {ev.plan && <p className="text-sm mt-2"><strong className="text-xs uppercase text-muted-foreground">Plan:</strong> {ev.plan}</p>}
-      {auth.canReview && ev.record_status === "pendiente_revision" && (
-        <div className="mt-3 flex justify-end">
-          <Button size="sm" variant="outline" onClick={() => review.mutate()}>
-            <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Confirmar
-          </Button>
+
+      {auth.canReview && !confirmed && (
+        <div className="mt-3 flex justify-end gap-2">
+          {!reviewing ? (
+            <Button size="sm" variant="outline" onClick={() => setReviewing(true)} disabled={lockedByOther}>
+              <Eye className="w-3.5 h-3.5 mr-1" /> Revisar
+            </Button>
+          ) : (
+            <>
+              <Button size="sm" variant="ghost" onClick={() => setReviewing(false)}>Liberar</Button>
+              <Button size="sm" onClick={() => review.mutate()} disabled={review.isPending}>
+                <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Confirmar y publicar
+              </Button>
+            </>
+          )}
         </div>
       )}
+
       <AuthorStamp
         userId={ev.created_by}
         date={ev.created_at}
