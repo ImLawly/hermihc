@@ -774,6 +774,33 @@ export type Database = {
         }
         Relationships: []
       }
+      record_locks: {
+        Row: {
+          expires_at: string
+          id: string
+          locked_at: string
+          locked_by: string
+          record_id: string
+          record_type: string
+        }
+        Insert: {
+          expires_at?: string
+          id?: string
+          locked_at?: string
+          locked_by: string
+          record_id: string
+          record_type: string
+        }
+        Update: {
+          expires_at?: string
+          id?: string
+          locked_at?: string
+          locked_by?: string
+          record_id?: string
+          record_type?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -804,6 +831,7 @@ export type Database = {
     }
     Functions: {
       can_review_records: { Args: { _user_id: string }; Returns: boolean }
+      cleanup_expired_locks: { Args: never; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
