@@ -127,7 +127,7 @@ export const listAuditLogs = createServerFn({ method: "POST" })
     assertSuper(context.userId);
     let q = supabaseAdmin
       .from("audit_logs")
-      .select("id, table_name, row_id, operation, user_id, performed_at")
+      .select("id, table_name, row_id, operation, user_id, performed_at, before_data, after_data")
       .order("performed_at", { ascending: false })
       .limit(data.limit);
     if (data.userId) q = q.eq("user_id", data.userId);
