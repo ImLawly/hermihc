@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Shield, Trash2, KeyRound, Check, X, ScrollText, ListChecks } from "lucide-react";
+import { Shield, Trash2, KeyRound, Check, X, ScrollText, ListChecks, MessageSquare, Link as LinkIcon } from "lucide-react";
 import { useState } from "react";
 
 export const Route = createFileRoute("/_authenticated/superuser")({
@@ -91,6 +91,12 @@ function SuperPage() {
           </Button>
           <Button asChild variant="outline">
             <Link to="/superuser/estado-sistema"><ListChecks className="w-4 h-4 mr-1" /> Estado</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link to="/superuser/links"><LinkIcon className="w-4 h-4 mr-1" /> Links temporales</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link to="/chat"><MessageSquare className="w-4 h-4 mr-1" /> Chats (vigilado)</Link>
           </Button>
           <Button
             variant="outline"

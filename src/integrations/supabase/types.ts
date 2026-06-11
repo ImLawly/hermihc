@@ -145,6 +145,97 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_conversations: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          is_group: boolean
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          is_group?: boolean
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          is_group?: boolean
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      chat_messages: {
+        Row: {
+          body: string
+          conversation_id: string
+          created_at: string
+          delivered_at: string
+          id: string
+          sender_id: string
+        }
+        Insert: {
+          body: string
+          conversation_id: string
+          created_at?: string
+          delivered_at?: string
+          id?: string
+          sender_id: string
+        }
+        Update: {
+          body?: string
+          conversation_id?: string
+          created_at?: string
+          delivered_at?: string
+          id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "chat_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_participants: {
+        Row: {
+          added_at: string
+          conversation_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          added_at?: string
+          conversation_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          added_at?: string
+          conversation_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_participants_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "chat_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clinical_notes: {
         Row: {
           admission_id: string
@@ -801,6 +892,63 @@ export type Database = {
         }
         Relationships: []
       }
+      temporary_access_tokens: {
+        Row: {
+          access_count: number
+          admission_id: string | null
+          created_at: string
+          created_by: string
+          expires_at: string
+          id: string
+          last_accessed_at: string | null
+          note: string | null
+          patient_id: string
+          revoked_at: string | null
+          token: string
+        }
+        Insert: {
+          access_count?: number
+          admission_id?: string | null
+          created_at?: string
+          created_by: string
+          expires_at: string
+          id?: string
+          last_accessed_at?: string | null
+          note?: string | null
+          patient_id: string
+          revoked_at?: string | null
+          token: string
+        }
+        Update: {
+          access_count?: number
+          admission_id?: string | null
+          created_at?: string
+          created_by?: string
+          expires_at?: string
+          id?: string
+          last_accessed_at?: string | null
+          note?: string | null
+          patient_id?: string
+          revoked_at?: string | null
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "temporary_access_tokens_admission_id_fkey"
+            columns: ["admission_id"]
+            isOneToOne: false
+            referencedRelation: "admissions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "temporary_access_tokens_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -847,6 +995,10 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_chat_participant: {
+        Args: { _conv_id: string; _user_id: string }
+        Returns: boolean
+      }
       is_medical_staff: { Args: { _user_id: string }; Returns: boolean }
       is_nurse: { Args: { _user_id: string }; Returns: boolean }
       is_superuser: { Args: { _user_id: string }; Returns: boolean }
