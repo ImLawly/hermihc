@@ -11,9 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as VTokenRouteImport } from './routes/v.$token'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as VTokenRouteImport } from './routes/v.$token'
 import { Route as AuthenticatedTrasladosRouteImport } from './routes/_authenticated/traslados'
 import { Route as AuthenticatedSuperuserRouteImport } from './routes/_authenticated/superuser'
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
@@ -35,6 +35,11 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VTokenRoute = VTokenRouteImport.update({
+  id: '/v/$token',
+  path: '/v/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
@@ -42,11 +47,6 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const VTokenRoute = VTokenRouteImport.update({
-  id: '/v/$token',
-  path: '/v/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedTrasladosRoute = AuthenticatedTrasladosRouteImport.update({
@@ -110,11 +110,11 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/v/$token': typeof VTokenRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/chat': typeof AuthenticatedChatRoute
   '/superuser': typeof AuthenticatedSuperuserRouteWithChildren
   '/traslados': typeof AuthenticatedTrasladosRoute
-  '/v/$token': typeof VTokenRoute
   '/pacientes/$patientId': typeof AuthenticatedPacientesPatientIdRoute
   '/pacientes/nuevo': typeof AuthenticatedPacientesNuevoRoute
   '/superuser/audit': typeof AuthenticatedSuperuserAuditRoute
@@ -126,11 +126,11 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/v/$token': typeof VTokenRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/chat': typeof AuthenticatedChatRoute
   '/superuser': typeof AuthenticatedSuperuserRouteWithChildren
   '/traslados': typeof AuthenticatedTrasladosRoute
-  '/v/$token': typeof VTokenRoute
   '/pacientes/$patientId': typeof AuthenticatedPacientesPatientIdRoute
   '/pacientes/nuevo': typeof AuthenticatedPacientesNuevoRoute
   '/superuser/audit': typeof AuthenticatedSuperuserAuditRoute
@@ -144,11 +144,11 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/v/$token': typeof VTokenRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/chat': typeof AuthenticatedChatRoute
   '/_authenticated/superuser': typeof AuthenticatedSuperuserRouteWithChildren
   '/_authenticated/traslados': typeof AuthenticatedTrasladosRoute
-  '/v/$token': typeof VTokenRoute
   '/_authenticated/pacientes/$patientId': typeof AuthenticatedPacientesPatientIdRoute
   '/_authenticated/pacientes/nuevo': typeof AuthenticatedPacientesNuevoRoute
   '/_authenticated/superuser/audit': typeof AuthenticatedSuperuserAuditRoute
@@ -162,11 +162,11 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/signup'
+    | '/v/$token'
     | '/admin'
     | '/chat'
     | '/superuser'
     | '/traslados'
-    | '/v/$token'
     | '/pacientes/$patientId'
     | '/pacientes/nuevo'
     | '/superuser/audit'
@@ -178,11 +178,11 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/signup'
+    | '/v/$token'
     | '/admin'
     | '/chat'
     | '/superuser'
     | '/traslados'
-    | '/v/$token'
     | '/pacientes/$patientId'
     | '/pacientes/nuevo'
     | '/superuser/audit'
@@ -195,11 +195,11 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/login'
     | '/signup'
+    | '/v/$token'
     | '/_authenticated/admin'
     | '/_authenticated/chat'
     | '/_authenticated/superuser'
     | '/_authenticated/traslados'
-    | '/v/$token'
     | '/_authenticated/pacientes/$patientId'
     | '/_authenticated/pacientes/nuevo'
     | '/_authenticated/superuser/audit'
@@ -232,6 +232,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/v/$token': {
+      id: '/v/$token'
+      path: '/v/$token'
+      fullPath: '/v/$token'
+      preLoaderRoute: typeof VTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
@@ -244,13 +251,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/v/$token': {
-      id: '/v/$token'
-      path: '/v/$token'
-      fullPath: '/v/$token'
-      preLoaderRoute: typeof VTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/traslados': {
