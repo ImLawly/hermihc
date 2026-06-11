@@ -13,10 +13,13 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as VTokenRouteImport } from './routes/v.$token'
 import { Route as AuthenticatedTrasladosRouteImport } from './routes/_authenticated/traslados'
 import { Route as AuthenticatedSuperuserRouteImport } from './routes/_authenticated/superuser'
+import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedPacientesIndexRouteImport } from './routes/_authenticated/pacientes.index'
+import { Route as AuthenticatedSuperuserLinksRouteImport } from './routes/_authenticated/superuser.links'
 import { Route as AuthenticatedSuperuserEstadoSistemaRouteImport } from './routes/_authenticated/superuser.estado-sistema'
 import { Route as AuthenticatedSuperuserAuditRouteImport } from './routes/_authenticated/superuser.audit'
 import { Route as AuthenticatedPacientesNuevoRouteImport } from './routes/_authenticated/pacientes.nuevo'
@@ -41,6 +44,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VTokenRoute = VTokenRouteImport.update({
+  id: '/v/$token',
+  path: '/v/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedTrasladosRoute = AuthenticatedTrasladosRouteImport.update({
   id: '/traslados',
   path: '/traslados',
@@ -49,6 +57,11 @@ const AuthenticatedTrasladosRoute = AuthenticatedTrasladosRouteImport.update({
 const AuthenticatedSuperuserRoute = AuthenticatedSuperuserRouteImport.update({
   id: '/superuser',
   path: '/superuser',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedChatRoute = AuthenticatedChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
@@ -61,6 +74,12 @@ const AuthenticatedPacientesIndexRoute =
     id: '/pacientes/',
     path: '/pacientes/',
     getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedSuperuserLinksRoute =
+  AuthenticatedSuperuserLinksRouteImport.update({
+    id: '/links',
+    path: '/links',
+    getParentRoute: () => AuthenticatedSuperuserRoute,
   } as any)
 const AuthenticatedSuperuserEstadoSistemaRoute =
   AuthenticatedSuperuserEstadoSistemaRouteImport.update({
@@ -92,12 +111,15 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/chat': typeof AuthenticatedChatRoute
   '/superuser': typeof AuthenticatedSuperuserRouteWithChildren
   '/traslados': typeof AuthenticatedTrasladosRoute
+  '/v/$token': typeof VTokenRoute
   '/pacientes/$patientId': typeof AuthenticatedPacientesPatientIdRoute
   '/pacientes/nuevo': typeof AuthenticatedPacientesNuevoRoute
   '/superuser/audit': typeof AuthenticatedSuperuserAuditRoute
   '/superuser/estado-sistema': typeof AuthenticatedSuperuserEstadoSistemaRoute
+  '/superuser/links': typeof AuthenticatedSuperuserLinksRoute
   '/pacientes/': typeof AuthenticatedPacientesIndexRoute
 }
 export interface FileRoutesByTo {
@@ -105,12 +127,15 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/chat': typeof AuthenticatedChatRoute
   '/superuser': typeof AuthenticatedSuperuserRouteWithChildren
   '/traslados': typeof AuthenticatedTrasladosRoute
+  '/v/$token': typeof VTokenRoute
   '/pacientes/$patientId': typeof AuthenticatedPacientesPatientIdRoute
   '/pacientes/nuevo': typeof AuthenticatedPacientesNuevoRoute
   '/superuser/audit': typeof AuthenticatedSuperuserAuditRoute
   '/superuser/estado-sistema': typeof AuthenticatedSuperuserEstadoSistemaRoute
+  '/superuser/links': typeof AuthenticatedSuperuserLinksRoute
   '/pacientes': typeof AuthenticatedPacientesIndexRoute
 }
 export interface FileRoutesById {
@@ -120,12 +145,15 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/chat': typeof AuthenticatedChatRoute
   '/_authenticated/superuser': typeof AuthenticatedSuperuserRouteWithChildren
   '/_authenticated/traslados': typeof AuthenticatedTrasladosRoute
+  '/v/$token': typeof VTokenRoute
   '/_authenticated/pacientes/$patientId': typeof AuthenticatedPacientesPatientIdRoute
   '/_authenticated/pacientes/nuevo': typeof AuthenticatedPacientesNuevoRoute
   '/_authenticated/superuser/audit': typeof AuthenticatedSuperuserAuditRoute
   '/_authenticated/superuser/estado-sistema': typeof AuthenticatedSuperuserEstadoSistemaRoute
+  '/_authenticated/superuser/links': typeof AuthenticatedSuperuserLinksRoute
   '/_authenticated/pacientes/': typeof AuthenticatedPacientesIndexRoute
 }
 export interface FileRouteTypes {
@@ -135,12 +163,15 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/admin'
+    | '/chat'
     | '/superuser'
     | '/traslados'
+    | '/v/$token'
     | '/pacientes/$patientId'
     | '/pacientes/nuevo'
     | '/superuser/audit'
     | '/superuser/estado-sistema'
+    | '/superuser/links'
     | '/pacientes/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -148,12 +179,15 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/admin'
+    | '/chat'
     | '/superuser'
     | '/traslados'
+    | '/v/$token'
     | '/pacientes/$patientId'
     | '/pacientes/nuevo'
     | '/superuser/audit'
     | '/superuser/estado-sistema'
+    | '/superuser/links'
     | '/pacientes'
   id:
     | '__root__'
@@ -162,12 +196,15 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/_authenticated/admin'
+    | '/_authenticated/chat'
     | '/_authenticated/superuser'
     | '/_authenticated/traslados'
+    | '/v/$token'
     | '/_authenticated/pacientes/$patientId'
     | '/_authenticated/pacientes/nuevo'
     | '/_authenticated/superuser/audit'
     | '/_authenticated/superuser/estado-sistema'
+    | '/_authenticated/superuser/links'
     | '/_authenticated/pacientes/'
   fileRoutesById: FileRoutesById
 }
@@ -176,6 +213,7 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
+  VTokenRoute: typeof VTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -208,6 +246,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/v/$token': {
+      id: '/v/$token'
+      path: '/v/$token'
+      fullPath: '/v/$token'
+      preLoaderRoute: typeof VTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/traslados': {
       id: '/_authenticated/traslados'
       path: '/traslados'
@@ -220,6 +265,13 @@ declare module '@tanstack/react-router' {
       path: '/superuser'
       fullPath: '/superuser'
       preLoaderRoute: typeof AuthenticatedSuperuserRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/chat': {
+      id: '/_authenticated/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof AuthenticatedChatRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/admin': {
@@ -235,6 +287,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/pacientes/'
       preLoaderRoute: typeof AuthenticatedPacientesIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/superuser/links': {
+      id: '/_authenticated/superuser/links'
+      path: '/links'
+      fullPath: '/superuser/links'
+      preLoaderRoute: typeof AuthenticatedSuperuserLinksRouteImport
+      parentRoute: typeof AuthenticatedSuperuserRoute
     }
     '/_authenticated/superuser/estado-sistema': {
       id: '/_authenticated/superuser/estado-sistema'
@@ -270,6 +329,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedSuperuserRouteChildren {
   AuthenticatedSuperuserAuditRoute: typeof AuthenticatedSuperuserAuditRoute
   AuthenticatedSuperuserEstadoSistemaRoute: typeof AuthenticatedSuperuserEstadoSistemaRoute
+  AuthenticatedSuperuserLinksRoute: typeof AuthenticatedSuperuserLinksRoute
 }
 
 const AuthenticatedSuperuserRouteChildren: AuthenticatedSuperuserRouteChildren =
@@ -277,6 +337,7 @@ const AuthenticatedSuperuserRouteChildren: AuthenticatedSuperuserRouteChildren =
     AuthenticatedSuperuserAuditRoute: AuthenticatedSuperuserAuditRoute,
     AuthenticatedSuperuserEstadoSistemaRoute:
       AuthenticatedSuperuserEstadoSistemaRoute,
+    AuthenticatedSuperuserLinksRoute: AuthenticatedSuperuserLinksRoute,
   }
 
 const AuthenticatedSuperuserRouteWithChildren =
@@ -286,6 +347,7 @@ const AuthenticatedSuperuserRouteWithChildren =
 
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedChatRoute: typeof AuthenticatedChatRoute
   AuthenticatedSuperuserRoute: typeof AuthenticatedSuperuserRouteWithChildren
   AuthenticatedTrasladosRoute: typeof AuthenticatedTrasladosRoute
   AuthenticatedPacientesPatientIdRoute: typeof AuthenticatedPacientesPatientIdRoute
@@ -295,6 +357,7 @@ interface AuthenticatedRouteChildren {
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedChatRoute: AuthenticatedChatRoute,
   AuthenticatedSuperuserRoute: AuthenticatedSuperuserRouteWithChildren,
   AuthenticatedTrasladosRoute: AuthenticatedTrasladosRoute,
   AuthenticatedPacientesPatientIdRoute: AuthenticatedPacientesPatientIdRoute,
@@ -311,7 +374,18 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
+  VTokenRoute: VTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
