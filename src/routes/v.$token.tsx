@@ -53,10 +53,8 @@ function TempView() {
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
             <Field label="Nombres" value={patient?.nombres} />
             <Field label="Apellidos" value={patient?.apellidos} />
-            <Field label="Cédula" value={patient?.cedula} />
+            <Field label="Cédula" value={patient ? `${patient.cedula_type}-${patient.cedula_number}` : ""} />
             <Field label="Fecha de nacimiento" value={patient?.fecha_nacimiento} />
-            <Field label="Sexo" value={patient?.sexo} />
-            <Field label="Tipo de sangre" value={patient?.tipo_sangre} />
           </div>
         </section>
 
@@ -71,9 +69,8 @@ function TempView() {
               </h3>
               <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
                 <Field label="Servicio" value={a.service} />
-                <Field label="Diagnóstico" value={a.diagnostico_ingreso} />
-                <Field label="Motivo de consulta" value={a.motivo_consulta} />
-                <Field label="Estado" value={a.discharged_at ? "Alta" : "Activa"} />
+                <Field label="Diagnóstico egreso" value={a.diagnostico_egreso} />
+                <Field label="Estado" value={a.discharge_at ? "Alta" : "Activa"} />
               </div>
 
               {evs.length > 0 && (
@@ -81,7 +78,9 @@ function TempView() {
                   {evs.map((e) => (
                     <div key={e.id} className="border-l-2 border-primary/30 pl-2 py-1 text-xs">
                       <p className="text-muted-foreground">{new Date(e.created_at).toLocaleString()}</p>
-                      <p className="whitespace-pre-wrap">{e.descripcion || e.subjetivo || ""}</p>
+                      {e.subjetivo && <p className="whitespace-pre-wrap"><b>S:</b> {e.subjetivo}</p>}
+                      {e.plan && <p className="whitespace-pre-wrap"><b>Plan:</b> {e.plan}</p>}
+                      {e.diagnostico_actual && <p className="whitespace-pre-wrap"><b>Dx:</b> {e.diagnostico_actual}</p>}
                     </div>
                   ))}
                 </Block>
@@ -91,7 +90,7 @@ function TempView() {
                   {ords.map((o) => (
                     <div key={o.id} className="border-l-2 border-primary/30 pl-2 py-1 text-xs">
                       <p className="text-muted-foreground">{new Date(o.created_at).toLocaleString()}</p>
-                      <p className="whitespace-pre-wrap">{o.descripcion || o.medicamento || ""}</p>
+                      <pre className="whitespace-pre-wrap font-sans">{JSON.stringify(o.items, null, 2)}</pre>
                     </div>
                   ))}
                 </Block>
@@ -100,8 +99,8 @@ function TempView() {
                 <Block title={`Notas (${nts.length})`}>
                   {nts.map((n) => (
                     <div key={n.id} className="border-l-2 border-primary/30 pl-2 py-1 text-xs">
-                      <p className="text-muted-foreground">{new Date(n.created_at).toLocaleString()}</p>
-                      <p className="whitespace-pre-wrap">{n.contenido || ""}</p>
+                      <p className="text-muted-foreground">{new Date(n.created_at).toLocaleString()} · {n.tipo}</p>
+                      <p className="whitespace-pre-wrap">{n.contenido}</p>
                     </div>
                   ))}
                 </Block>
