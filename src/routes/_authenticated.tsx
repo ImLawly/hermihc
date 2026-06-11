@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet, redirect, Link, useRouter } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, SERVICE_LABELS, ROLE_LABELS } from "@/hooks/useAuth";
-import { Stethoscope, LogOut, Users, ShieldAlert, Bell, Menu } from "lucide-react";
+import { Stethoscope, LogOut, Users, ShieldAlert, Bell, Menu, MessageSquare } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { OnlineStatus } from "@/components/OnlineStatus";
@@ -48,6 +48,7 @@ function AuthenticatedLayout() {
   const nav = [
     { to: "/pacientes", label: "Pacientes", icon: Users, show: auth.isMedical || auth.isNurse },
     { to: "/traslados", label: "Traslados", icon: Bell, show: auth.isTransport || auth.isAdmin },
+    { to: "/chat", label: "Chat", icon: MessageSquare, show: !!auth.user },
     { to: "/admin", label: "Administración", icon: ShieldAlert, show: auth.isAdmin },
     { to: "/superuser", label: "Superusuario", icon: ShieldAlert, show: auth.isSuperuser },
   ].filter(n => n.show);

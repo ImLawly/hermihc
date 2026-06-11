@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { sendPush } from "@/lib/push.functions";
 import { deletePatientBySuper } from "@/lib/superuser.functions";
+import { ShareTempLink } from "@/components/ShareTempLink";
 
 import { Tab1Frontal } from "@/components/tabs/Tab1Frontal";
 import { Tab2Evoluciones } from "@/components/tabs/Tab2Evoluciones";
@@ -173,6 +174,11 @@ function PatientDetail() {
               const newBed = prompt("Nueva cama (opcional):", patient.current_bed ?? "");
               updateLocation.mutate({ current_location: newLoc as "emergencia" | "hospitalizacion" | "consulta_externa", current_bed: newBed || null });
             }}>Reubicar</Button>
+          )}
+          {auth.isMedical && (
+            <div className="relative">
+              <ShareTempLink patientId={patientId} admissionId={selectedAdmissionId} />
+            </div>
           )}
           {auth.isSuperuser && (
             <Button size="sm" variant="destructive" onClick={() => {
