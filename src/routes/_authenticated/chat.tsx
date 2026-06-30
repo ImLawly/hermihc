@@ -26,6 +26,7 @@ function ChatPage() {
     queryKey: ["chat-convs"],
     queryFn: () => fetchConvs(),
     refetchInterval: 10000,
+    enabled: !!auth.user && !auth.loading,
   });
   const [active, setActive] = useState<string | null>(null);
   const [showNew, setShowNew] = useState(false);
