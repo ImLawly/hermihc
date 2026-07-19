@@ -31,23 +31,40 @@ function TempView() {
     );
   }
   if (!data) return null;
-  const { patient, admissions, evolutions, orders, notes, meta } = data;
+  const { patient, admissions, evolutions, orders, notes, monitoring, labs, interconsults, deliveryNotes, operativeNotes, meta } = data;
+  const wmText = `CONFIDENCIAL · ${patient?.nombres ?? ""} ${patient?.apellidos ?? ""} · #${meta.token_short} · ${new Date().toLocaleString()}`;
 
   return (
-    <main className="min-h-screen bg-background">
-      <header className="border-b bg-card sticky top-0 z-10">
+    <main className="min-h-screen bg-background relative">
+      {/* Marca de agua diagonal repetida */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 z-30 select-none overflow-hidden opacity-[0.08]"
+        style={{
+          backgroundImage:
+            `repeating-linear-gradient(-30deg, transparent 0 120px, rgba(0,0,0,0.001) 120px 121px)`,
+        }}
+      >
+        <div className="absolute inset-0 flex flex-wrap gap-8 p-8 -rotate-[30deg] origin-center text-[10px] font-semibold tracking-widest uppercase text-foreground">
+          {Array.from({ length: 120 }).map((_, i) => (
+            <span key={i} className="whitespace-nowrap">{wmText}</span>
+          ))}
+        </div>
+      </div>
+
+      <header className="border-b bg-card sticky top-0 z-40">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-2">
           <ShieldCheck className="w-5 h-5 text-primary" />
           <div className="flex-1 min-w-0">
-            <p className="font-semibold text-sm">Vista de solo lectura</p>
+            <p className="font-semibold text-sm">Vista de solo lectura · Documento confidencial</p>
             <p className="text-[11px] text-muted-foreground">
-              Expira: {new Date(meta.expires_at).toLocaleString()} · Accesos: {meta.access_count}
+              Expira: {new Date(meta.expires_at).toLocaleString()} · Accesos: {meta.access_count} · Token #{meta.token_short}
             </p>
           </div>
         </div>
       </header>
 
-      <div className="max-w-4xl mx-auto p-4 space-y-4">
+      <div className="max-w-4xl mx-auto p-4 space-y-4 relative z-10">
         <section className="bg-card border rounded-xl p-4">
           <h2 className="font-semibold mb-2">Datos del paciente</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
@@ -62,6 +79,11 @@ function TempView() {
           const evs = evolutions.filter((e) => e.admission_id === a.id);
           const ords = orders.filter((o) => o.admission_id === a.id);
           const nts = notes.filter((n) => n.admission_id === a.id);
+          const mon = monitoring.filter((m) => m.admission_id === a.id);
+          const lb = labs.filter((l) => l.admission_id === a.id);
+          const ic = interconsults.filter((i) => i.admission_id === a.id);
+          const dn = deliveryNotes.filter((d) => d.admission_id === a.id);
+          const on = operativeNotes.filter((o) => o.admission_id === a.id);
           return (
             <section key={a.id} className="bg-card border rounded-xl p-4">
               <h3 className="font-semibold flex items-center gap-2">
@@ -86,7 +108,7 @@ function TempView() {
                 </Block>
               )}
               {ords.length > 0 && (
-                <Block title={`Órdenes (${ords.length})`}>
+                <Block title={`Órdenes médicas (${ords.length})`}>
                   {ords.map((o) => (
                     <div key={o.id} className="border-l-2 border-primary/30 pl-2 py-1 text-xs">
                       <p className="text-muted-foreground">{new Date(o.created_at).toLocaleString()}</p>
@@ -95,8 +117,64 @@ function TempView() {
                   ))}
                 </Block>
               )}
+              {mon.length > 0 && (
+                <Block title={`Monitoreo (${mon.length})`}>
+                  {mon.map((m) => (
+                    <div key={m.id} className="border-l-2 border-primary/30 pl-2 py-1 text-xs grid grid-cols-2 sm:grid-cols-4 gap-1">
+                      <span className="text-muted-foreground col-span-2 sm:col-span-4">{new Date(m.recorded_at).toLocaleString()}</span>
+                      {m.pa_sistolica != null && <span>PA {m.pa_sistolica}/{m.pa_diastolica}</span>}
+                      {m.fc != null && <span>FC {m.fc}</span>}
+                      {m.fr != null && <span>FR {m.fr}</span>}
+                      {m.temperatura != null && <span>T {m.temperatura}°</span>}
+                      {m.sat_o2 != null && <span>SatO₂ {m.sat_o2}%</span>}
+                      {m.glicemia != null && <span>Gluc {m.glicemia}</span>}
+                    </div>
+                  ))}
+                </Block>
+              )}
+              {lb.length > 0 && (
+                <Block title={`Laboratorios (${lb.length})`}>
+                  {lb.map((l) => (
+                    <div key={l.id} className="border-l-2 border-primary/30 pl-2 py-1 text-xs">
+                      <p className="text-muted-foreground">{new Date(l.taken_at).toLocaleString()} · {l.tipo}</p>
+                      <pre className="whitespace-pre-wrap font-sans">{JSON.stringify(l.resultados, null, 2)}</pre>
+                    </div>
+                  ))}
+                </Block>
+              )}
+              {ic.length > 0 && (
+                <Block title={`Interconsultas (${ic.length})`}>
+                  {ic.map((i) => (
+                    <div key={i.id} className="border-l-2 border-primary/30 pl-2 py-1 text-xs">
+                      <p className="text-muted-foreground">{new Date(i.created_at).toLocaleString()} → {i.target_service}</p>
+                      {i.comentario && <p className="whitespace-pre-wrap"><b>Solicita:</b> {i.comentario}</p>}
+                      {i.respuesta && <p className="whitespace-pre-wrap"><b>Respuesta:</b> {i.respuesta}</p>}
+                    </div>
+                  ))}
+                </Block>
+              )}
+              {dn.length > 0 && (
+                <Block title={`Notas de parto (${dn.length})`}>
+                  {dn.map((d) => (
+                    <div key={d.id} className="border-l-2 border-primary/30 pl-2 py-1 text-xs">
+                      <p className="text-muted-foreground">{new Date(d.created_at).toLocaleString()}</p>
+                      <pre className="whitespace-pre-wrap font-sans">{JSON.stringify(d, null, 2)}</pre>
+                    </div>
+                  ))}
+                </Block>
+              )}
+              {on.length > 0 && (
+                <Block title={`Notas operatorias (${on.length})`}>
+                  {on.map((o) => (
+                    <div key={o.id} className="border-l-2 border-primary/30 pl-2 py-1 text-xs">
+                      <p className="text-muted-foreground">{new Date(o.created_at).toLocaleString()}</p>
+                      <pre className="whitespace-pre-wrap font-sans">{JSON.stringify(o, null, 2)}</pre>
+                    </div>
+                  ))}
+                </Block>
+              )}
               {nts.length > 0 && (
-                <Block title={`Notas (${nts.length})`}>
+                <Block title={`Notas clínicas (${nts.length})`}>
                   {nts.map((n) => (
                     <div key={n.id} className="border-l-2 border-primary/30 pl-2 py-1 text-xs">
                       <p className="text-muted-foreground">{new Date(n.created_at).toLocaleString()} · {n.tipo}</p>
@@ -112,6 +190,7 @@ function TempView() {
     </main>
   );
 }
+
 
 function Field({ label, value }: { label: string; value: unknown }) {
   return (
