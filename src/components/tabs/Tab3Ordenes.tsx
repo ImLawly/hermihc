@@ -8,10 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { fmtDateTime, toLocalInputValue } from "@/lib/medical";
 import { toast } from "sonner";
-import { Plus, CheckCircle2, Check, X } from "lucide-react";
+import { Plus, CheckCircle2, Check, X, Pencil } from "lucide-react";
 import { AuthorStamp } from "@/components/AuthorStamp";
 
-interface OrderItem { n: number; text: string; medication?: string; dose?: string; route?: string; times?: string[]; }
+interface OrderItem { n: number; text: string; medication?: string; dose?: string; route?: string; times?: string[]; omitted?: boolean; }
 
 export function Tab3Ordenes({ admission }: { admission: any }) {
   const auth = useAuth();
