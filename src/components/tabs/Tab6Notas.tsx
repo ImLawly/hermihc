@@ -10,6 +10,7 @@ import { fmtDateTime, toLocalInputValue, NOTE_TYPE_LABELS } from "@/lib/medical"
 import { toast } from "sonner";
 import { Plus } from "lucide-react";
 import { AuthorStamp } from "@/components/AuthorStamp";
+import { NewbornPanel } from "@/components/NewbornPanel";
 
 export function Tab6Notas({ admission, patient }: { admission: any; patient?: any }) {
   const isObstetric = admission?.service === "obstetricia";
