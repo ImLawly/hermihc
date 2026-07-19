@@ -7,6 +7,20 @@ import { ShieldCheck, AlertTriangle, FileText } from "lucide-react";
 export const Route = createFileRoute("/v/$token")({
   head: () => ({ meta: [{ title: "Vista temporal — Historia clínica" }] }),
   component: TempView,
+  errorComponent: ({ error }) => (
+    <main className="min-h-screen flex items-center justify-center p-6 bg-background">
+      <div className="max-w-md text-center bg-card border rounded-2xl p-8">
+        <AlertTriangle className="w-10 h-10 mx-auto text-amber-500 mb-3" />
+        <h1 className="text-lg font-semibold">Acceso no disponible</h1>
+        <p className="text-sm text-muted-foreground mt-2">{(error as Error).message}</p>
+      </div>
+    </main>
+  ),
+  notFoundComponent: () => (
+    <main className="min-h-screen flex items-center justify-center p-6 bg-background">
+      <p className="text-sm text-muted-foreground">Enlace no encontrado.</p>
+    </main>
+  ),
 });
 
 const LOC: Record<string, string> = {
