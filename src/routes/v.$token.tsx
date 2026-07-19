@@ -122,12 +122,14 @@ function TempView() {
                   {mon.map((m) => (
                     <div key={m.id} className="border-l-2 border-primary/30 pl-2 py-1 text-xs grid grid-cols-2 sm:grid-cols-4 gap-1">
                       <span className="text-muted-foreground col-span-2 sm:col-span-4">{new Date(m.recorded_at).toLocaleString()}</span>
-                      {m.pa_sistolica != null && <span>PA {m.pa_sistolica}/{m.pa_diastolica}</span>}
+                      {m.ta && <span>TA {m.ta}</span>}
                       {m.fc != null && <span>FC {m.fc}</span>}
                       {m.fr != null && <span>FR {m.fr}</span>}
-                      {m.temperatura != null && <span>T {m.temperatura}°</span>}
-                      {m.sat_o2 != null && <span>SatO₂ {m.sat_o2}%</span>}
-                      {m.glicemia != null && <span>Gluc {m.glicemia}</span>}
+                      {m.tam != null && <span>TAM {m.tam}</span>}
+                      {m.sato2 != null && <span>SatO₂ {m.sato2}%</span>}
+                      {m.fcf != null && <span>FCF {m.fcf}</span>}
+                      {m.du && <span>DU {m.du}</span>}
+                      {m.mf && <span>MF {m.mf}</span>}
                     </div>
                   ))}
                 </Block>
@@ -136,12 +138,13 @@ function TempView() {
                 <Block title={`Laboratorios (${lb.length})`}>
                   {lb.map((l) => (
                     <div key={l.id} className="border-l-2 border-primary/30 pl-2 py-1 text-xs">
-                      <p className="text-muted-foreground">{new Date(l.taken_at).toLocaleString()} · {l.tipo}</p>
-                      <pre className="whitespace-pre-wrap font-sans">{JSON.stringify(l.resultados, null, 2)}</pre>
+                      <p className="text-muted-foreground">{new Date(l.sampled_at).toLocaleString()} · {l.parametro}</p>
+                      <p><b>{l.valor}</b> {l.unidad ?? ""}</p>
                     </div>
                   ))}
                 </Block>
               )}
+
               {ic.length > 0 && (
                 <Block title={`Interconsultas (${ic.length})`}>
                   {ic.map((i) => (
