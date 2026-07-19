@@ -375,6 +375,8 @@ export type Database = {
           created_at: string
           created_by: string
           diagnosticos: string | null
+          discharged_at: string | null
+          discharged_by: string | null
           id: string
           responded_at: string | null
           responded_by: string | null
@@ -387,6 +389,8 @@ export type Database = {
           created_at?: string
           created_by: string
           diagnosticos?: string | null
+          discharged_at?: string | null
+          discharged_by?: string | null
           id?: string
           responded_at?: string | null
           responded_by?: string | null
@@ -399,6 +403,8 @@ export type Database = {
           created_at?: string
           created_by?: string
           diagnosticos?: string | null
+          discharged_at?: string | null
+          discharged_by?: string | null
           id?: string
           responded_at?: string | null
           responded_by?: string | null
@@ -1090,6 +1096,14 @@ export type Database = {
     Functions: {
       can_review_records: { Args: { _user_id: string }; Returns: boolean }
       cleanup_expired_locks: { Args: never; Returns: undefined }
+      has_interconsult_access: {
+        Args: { _admission_id: string; _user_id: string }
+        Returns: boolean
+      }
+      has_interconsult_access_patient: {
+        Args: { _patient_id: string; _user_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

@@ -115,12 +115,29 @@ function InterCard({ item }: { item: any }) {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const discharge = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.from("interconsultations").update({
+        discharged_at: new Date().toISOString(), discharged_by: auth.user!.id,
+      } as any).eq("id", item.id).select("id").single();
+      if (error) throw error;
+      if (!data) throw new Error("No se pudo dar de alta. Verifica tus permisos.");
+    },
+    onSuccess: () => {
+      toast.success("Alta por su servicio registrada");
+      qc.invalidateQueries({ queryKey: ["interconsults", item.admission_id] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   return (
     <div className="bg-card border rounded-xl p-4">
       <div className="flex justify-between flex-wrap gap-2 mb-2">
         <p className="text-xs text-muted-foreground">{fmtDateTime(item.created_at)} → <strong>{SERVICE_LABELS[item.target_service as ServiceType]}</strong></p>
         <AuthorStamp userId={item.created_by} date={item.created_at} label="Creado por" />
-        {item.responded_at && <span className="status-pill" data-tone="confirmed">Respondida</span>}
+        {item.discharged_at
+          ? <span className="status-pill" data-tone="pending">Alta por servicio</span>
+          : item.responded_at && <span className="status-pill" data-tone="confirmed">Respondida</span>}
       </div>
       {item.diagnosticos && <p className="text-sm"><strong className="text-xs uppercase text-muted-foreground">Dx:</strong> {item.diagnosticos}</p>}
       <p className="text-sm mt-1">{item.comentario}</p>
@@ -129,6 +146,18 @@ function InterCard({ item }: { item: any }) {
           <p className="text-xs text-muted-foreground">Respuesta · {fmtDateTime(item.responded_at)}</p>
           <p className="text-sm">{item.respuesta}</p>
           <AuthorStamp userId={item.responded_by} date={item.responded_at} label="Respondida por" />
+          {item.discharged_at ? (
+            <p className="text-xs text-muted-foreground mt-2">
+              Dada de alta por su servicio · {fmtDateTime(item.discharged_at)}
+              <AuthorStamp userId={item.discharged_by} date={item.discharged_at} label="Alta por" />
+            </p>
+          ) : isTarget && auth.isMedical && (
+            <div className="flex justify-end mt-2">
+              <Button size="sm" variant="outline" onClick={() => discharge.mutate()} disabled={discharge.isPending}>
+                Dar de alta por mi servicio
+              </Button>
+            </div>
+          )}
         </div>
       ) : isTarget && auth.isMedical && (
         <div className="mt-3 border-t pt-2 space-y-2">
