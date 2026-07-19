@@ -100,22 +100,34 @@ export const viewTempLink = createServerFn({ method: "POST" })
     ]);
     const admissions = admRes.data ?? [];
     const admIds = admissions.map((a: { id: string }) => a.id);
-    const [evol, ord, notas] = admIds.length ? await Promise.all([
+    const [evol, ord, notas, mon, labs, inter, deliv, oper] = admIds.length ? await Promise.all([
       supabaseAdmin.from("evolutions").select("*").in("admission_id", admIds).order("created_at", { ascending: false }),
       supabaseAdmin.from("medical_orders").select("*").in("admission_id", admIds).order("created_at", { ascending: false }),
       supabaseAdmin.from("clinical_notes").select("*").in("admission_id", admIds).order("created_at", { ascending: false }),
-    ]) : [{ data: [] }, { data: [] }, { data: [] }] as const;
+      supabaseAdmin.from("monitoring_entries").select("*").in("admission_id", admIds).order("recorded_at", { ascending: false }),
+      supabaseAdmin.from("lab_results").select("*").in("admission_id", admIds).order("taken_at", { ascending: false }),
+      supabaseAdmin.from("interconsultations").select("*").in("admission_id", admIds).order("created_at", { ascending: false }),
+      supabaseAdmin.from("delivery_notes").select("*").in("admission_id", admIds).order("created_at", { ascending: false }),
+      supabaseAdmin.from("operative_notes").select("*").in("admission_id", admIds).order("created_at", { ascending: false }),
+    ]) : [{ data: [] }, { data: [] }, { data: [] }, { data: [] }, { data: [] }, { data: [] }, { data: [] }, { data: [] }] as const;
 
     return {
       meta: {
         expires_at: row.expires_at,
         note: row.note,
         access_count: (row.access_count ?? 0) + 1,
+        token_short: data.token.slice(-6),
       },
       patient,
       admissions,
       evolutions: evol.data ?? [],
       orders: ord.data ?? [],
       notes: notas.data ?? [],
+      monitoring: mon.data ?? [],
+      labs: labs.data ?? [],
+      interconsults: inter.data ?? [],
+      deliveryNotes: deliv.data ?? [],
+      operativeNotes: oper.data ?? [],
     };
   });
+
