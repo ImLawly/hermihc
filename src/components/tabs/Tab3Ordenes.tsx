@@ -137,12 +137,17 @@ function OrderBlock({ order }: { order: any }) {
 
   const review = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("medical_orders").update({
+      const { data, error } = await supabase.from("medical_orders").update({
         record_status: "confirmado", reviewed_by: auth.user!.id, reviewed_at: new Date().toISOString(),
-      } as any).eq("id", order.id);
+      } as any).eq("id", order.id).select("id").single();
       if (error) throw error;
+      if (!data) throw new Error("No se pudo confirmar la orden. Verifica que tu rol y servicio tengan permiso.");
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["orders", order.admission_id] }),
+    onSuccess: () => {
+      toast.success("Orden confirmada");
+      qc.invalidateQueries({ queryKey: ["orders", order.admission_id] });
+    },
+    onError: (e: Error) => toast.error(e.message),
   });
 
   return (
@@ -181,7 +186,7 @@ function OrderBlock({ order }: { order: any }) {
       </ol>
       {auth.canReview && order.record_status === "pendiente_revision" && (
         <div className="mt-3 flex justify-end">
-          <Button size="sm" variant="outline" onClick={() => review.mutate()}>
+          <Button size="sm" variant="outline" onClick={() => review.mutate()} disabled={review.isPending}>
             <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Confirmar
           </Button>
         </div>
