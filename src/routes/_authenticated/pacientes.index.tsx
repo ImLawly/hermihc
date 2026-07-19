@@ -111,7 +111,7 @@ function PacientesIndex() {
       <div className="flex flex-wrap gap-2 mb-4 items-center">
         <div className="relative flex-1 min-w-[200px]">
           <Search className="w-4 h-4 absolute left-2.5 top-2.5 text-muted-foreground" />
-          <Input className="pl-8" placeholder="Buscar por nombre o cédula" value={q} onChange={e => setQ(e.target.value)} />
+          <Input className="pl-8" placeholder="Buscar por nombre, cédula o fecha de ingreso (ej: 2024, 03/2024, 15/03)" value={q} onChange={e => setQ(e.target.value)} />
         </div>
         <select className="h-9 rounded-md border border-input bg-background px-2 text-sm"
           value={loc} onChange={e => setLoc(e.target.value as typeof loc)}>
