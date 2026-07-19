@@ -67,7 +67,7 @@ export function ShareTempLink({ patientId, admissionId }: { patientId: string; a
             </div>
           )}
           <p className="text-[10px] text-muted-foreground mt-2">
-            El enlace caducará automáticamente. Puedes revocarlo desde el panel de superusuario.
+            El enlace caducará automáticamente.
           </p>
         </div>
       )}
