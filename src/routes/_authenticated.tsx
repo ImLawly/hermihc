@@ -45,8 +45,11 @@ function AuthenticatedLayout() {
     );
   }
 
+  const showNeonatos = auth.isSuperuser || auth.isAdmin ||
+    auth.roles.some(r => r.service === "pediatria" || r.service === "obstetricia");
   const nav = [
     { to: "/pacientes", label: "Pacientes", icon: Users, show: auth.isMedical || auth.isNurse },
+    { to: "/neonatos", label: "Neonatos", icon: Users, show: showNeonatos },
     { to: "/traslados", label: "Traslados", icon: Bell, show: auth.isTransport || auth.isAdmin },
     { to: "/chat", label: "Chat", icon: MessageSquare, show: !!auth.user },
     { to: "/admin", label: "Administración", icon: ShieldAlert, show: auth.isAdmin },

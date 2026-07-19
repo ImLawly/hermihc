@@ -556,6 +556,116 @@ export type Database = {
           },
         ]
       }
+      newborn_records: {
+        Row: {
+          apellidos: string | null
+          apgar_1: number | null
+          apgar_5: number | null
+          closed_at: string | null
+          closed_by: string | null
+          created_at: string
+          created_by: string
+          esfuerzo_respiratorio:
+            | Database["public"]["Enums"]["respiratory_effort"]
+            | null
+          fecha_nacimiento: string | null
+          id: string
+          mother_admission_id: string
+          mother_patient_id: string
+          nombres: string | null
+          notas_enfermeria: string | null
+          pediatric_admission_id: string | null
+          pediatric_notes: string | null
+          pediatric_patient_id: string | null
+          peso_gr: number | null
+          sexo: Database["public"]["Enums"]["newborn_sex"] | null
+          status: Database["public"]["Enums"]["newborn_status"]
+          talla_cm: number | null
+          updated_at: string
+        }
+        Insert: {
+          apellidos?: string | null
+          apgar_1?: number | null
+          apgar_5?: number | null
+          closed_at?: string | null
+          closed_by?: string | null
+          created_at?: string
+          created_by: string
+          esfuerzo_respiratorio?:
+            | Database["public"]["Enums"]["respiratory_effort"]
+            | null
+          fecha_nacimiento?: string | null
+          id?: string
+          mother_admission_id: string
+          mother_patient_id: string
+          nombres?: string | null
+          notas_enfermeria?: string | null
+          pediatric_admission_id?: string | null
+          pediatric_notes?: string | null
+          pediatric_patient_id?: string | null
+          peso_gr?: number | null
+          sexo?: Database["public"]["Enums"]["newborn_sex"] | null
+          status?: Database["public"]["Enums"]["newborn_status"]
+          talla_cm?: number | null
+          updated_at?: string
+        }
+        Update: {
+          apellidos?: string | null
+          apgar_1?: number | null
+          apgar_5?: number | null
+          closed_at?: string | null
+          closed_by?: string | null
+          created_at?: string
+          created_by?: string
+          esfuerzo_respiratorio?:
+            | Database["public"]["Enums"]["respiratory_effort"]
+            | null
+          fecha_nacimiento?: string | null
+          id?: string
+          mother_admission_id?: string
+          mother_patient_id?: string
+          nombres?: string | null
+          notas_enfermeria?: string | null
+          pediatric_admission_id?: string | null
+          pediatric_notes?: string | null
+          pediatric_patient_id?: string | null
+          peso_gr?: number | null
+          sexo?: Database["public"]["Enums"]["newborn_sex"] | null
+          status?: Database["public"]["Enums"]["newborn_status"]
+          talla_cm?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "newborn_records_mother_admission_id_fkey"
+            columns: ["mother_admission_id"]
+            isOneToOne: false
+            referencedRelation: "admissions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "newborn_records_mother_patient_id_fkey"
+            columns: ["mother_patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "newborn_records_pediatric_admission_id_fkey"
+            columns: ["pediatric_admission_id"]
+            isOneToOne: false
+            referencedRelation: "admissions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "newborn_records_pediatric_patient_id_fkey"
+            columns: ["pediatric_patient_id"]
+            isOneToOne: false
+            referencedRelation: "patients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           body: string | null
@@ -1001,6 +1111,8 @@ export type Database = {
       }
       is_medical_staff: { Args: { _user_id: string }; Returns: boolean }
       is_nurse: { Args: { _user_id: string }; Returns: boolean }
+      is_obstetric_staff: { Args: { _user_id: string }; Returns: boolean }
+      is_pediatric_staff: { Args: { _user_id: string }; Returns: boolean }
       is_superuser: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
@@ -1015,9 +1127,16 @@ export type Database = {
       cedula_type: "V" | "E"
       discharge_type: "alta_medica" | "contraopinion"
       location_type: "consulta_externa" | "emergencia" | "hospitalizacion"
+      newborn_sex: "masculino" | "femenino" | "indeterminado"
+      newborn_status:
+        | "en_sala_partos"
+        | "cerrado_enfermeria"
+        | "ingresado_neonato"
+        | "constancia_historica"
       note_type: "medica" | "aclaratoria" | "enfermeria"
       patient_status: "activa" | "archivada"
       record_status: "pendiente_revision" | "confirmado"
+      respiratory_effort: "espontaneo" | "estimulacion"
       service_type:
         | "obstetricia"
         | "pediatria"
@@ -1164,9 +1283,17 @@ export const Constants = {
       cedula_type: ["V", "E"],
       discharge_type: ["alta_medica", "contraopinion"],
       location_type: ["consulta_externa", "emergencia", "hospitalizacion"],
+      newborn_sex: ["masculino", "femenino", "indeterminado"],
+      newborn_status: [
+        "en_sala_partos",
+        "cerrado_enfermeria",
+        "ingresado_neonato",
+        "constancia_historica",
+      ],
       note_type: ["medica", "aclaratoria", "enfermeria"],
       patient_status: ["activa", "archivada"],
       record_status: ["pendiente_revision", "confirmado"],
+      respiratory_effort: ["espontaneo", "estimulacion"],
       service_type: [
         "obstetricia",
         "pediatria",

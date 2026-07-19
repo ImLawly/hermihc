@@ -17,6 +17,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as VTokenRouteImport } from './routes/v.$token'
 import { Route as AuthenticatedTrasladosRouteImport } from './routes/_authenticated/traslados'
 import { Route as AuthenticatedSuperuserRouteImport } from './routes/_authenticated/superuser'
+import { Route as AuthenticatedNeonatosRouteImport } from './routes/_authenticated/neonatos'
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
@@ -67,6 +68,11 @@ const AuthenticatedTrasladosRoute = AuthenticatedTrasladosRouteImport.update({
 const AuthenticatedSuperuserRoute = AuthenticatedSuperuserRouteImport.update({
   id: '/superuser',
   path: '/superuser',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedNeonatosRoute = AuthenticatedNeonatosRouteImport.update({
+  id: '/neonatos',
+  path: '/neonatos',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedChatRoute = AuthenticatedChatRouteImport.update({
@@ -148,6 +154,7 @@ export interface FileRoutesByFullPath {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/chat': typeof AuthenticatedChatRoute
+  '/neonatos': typeof AuthenticatedNeonatosRoute
   '/superuser': typeof AuthenticatedSuperuserRouteWithChildren
   '/traslados': typeof AuthenticatedTrasladosRoute
   '/v/$token': typeof VTokenRoute
@@ -169,6 +176,7 @@ export interface FileRoutesByTo {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/chat': typeof AuthenticatedChatRoute
+  '/neonatos': typeof AuthenticatedNeonatosRoute
   '/superuser': typeof AuthenticatedSuperuserRouteWithChildren
   '/traslados': typeof AuthenticatedTrasladosRoute
   '/v/$token': typeof VTokenRoute
@@ -192,6 +200,7 @@ export interface FileRoutesById {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/chat': typeof AuthenticatedChatRoute
+  '/_authenticated/neonatos': typeof AuthenticatedNeonatosRoute
   '/_authenticated/superuser': typeof AuthenticatedSuperuserRouteWithChildren
   '/_authenticated/traslados': typeof AuthenticatedTrasladosRoute
   '/v/$token': typeof VTokenRoute
@@ -215,6 +224,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/admin'
     | '/chat'
+    | '/neonatos'
     | '/superuser'
     | '/traslados'
     | '/v/$token'
@@ -236,6 +246,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/admin'
     | '/chat'
+    | '/neonatos'
     | '/superuser'
     | '/traslados'
     | '/v/$token'
@@ -258,6 +269,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/admin'
     | '/_authenticated/chat'
+    | '/_authenticated/neonatos'
     | '/_authenticated/superuser'
     | '/_authenticated/traslados'
     | '/v/$token'
@@ -340,6 +352,13 @@ declare module '@tanstack/react-router' {
       path: '/superuser'
       fullPath: '/superuser'
       preLoaderRoute: typeof AuthenticatedSuperuserRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/neonatos': {
+      id: '/_authenticated/neonatos'
+      path: '/neonatos'
+      fullPath: '/neonatos'
+      preLoaderRoute: typeof AuthenticatedNeonatosRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/chat': {
@@ -451,6 +470,7 @@ const AuthenticatedSuperuserRouteWithChildren =
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedChatRoute: typeof AuthenticatedChatRoute
+  AuthenticatedNeonatosRoute: typeof AuthenticatedNeonatosRoute
   AuthenticatedSuperuserRoute: typeof AuthenticatedSuperuserRouteWithChildren
   AuthenticatedTrasladosRoute: typeof AuthenticatedTrasladosRoute
   AuthenticatedPacientesPatientIdRoute: typeof AuthenticatedPacientesPatientIdRoute
@@ -461,6 +481,7 @@ interface AuthenticatedRouteChildren {
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedChatRoute: AuthenticatedChatRoute,
+  AuthenticatedNeonatosRoute: AuthenticatedNeonatosRoute,
   AuthenticatedSuperuserRoute: AuthenticatedSuperuserRouteWithChildren,
   AuthenticatedTrasladosRoute: AuthenticatedTrasladosRoute,
   AuthenticatedPacientesPatientIdRoute: AuthenticatedPacientesPatientIdRoute,

@@ -241,7 +241,7 @@ function PatientDetail() {
             {tab === "ordenes" && <Tab3Ordenes admission={admission} />}
             {tab === "monitoreo" && <Tab4Monitoreo admission={admission} />}
             {tab === "interconsultas" && <Tab5Interconsultas admission={admission} />}
-            {tab === "notas" && <Tab6Notas admission={admission} />}
+            {tab === "notas" && <Tab6Notas admission={admission} patient={patient} />}
           </div>
         </>
       )}
