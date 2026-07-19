@@ -8,10 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { fmtDateTime, toLocalInputValue } from "@/lib/medical";
 import { toast } from "sonner";
-import { Plus, CheckCircle2, Check, X } from "lucide-react";
+import { Plus, CheckCircle2, Check, X, Pencil } from "lucide-react";
 import { AuthorStamp } from "@/components/AuthorStamp";
 
-interface OrderItem { n: number; text: string; medication?: string; dose?: string; route?: string; times?: string[]; }
+interface OrderItem { n: number; text: string; medication?: string; dose?: string; route?: string; times?: string[]; omitted?: boolean; }
 
 export function Tab3Ordenes({ admission }: { admission: any }) {
   const auth = useAuth();
@@ -116,6 +116,9 @@ function NewOrdersForm({ admissionId, onSaved }: { admissionId: string; onSaved:
 function OrderBlock({ order }: { order: any }) {
   const auth = useAuth();
   const qc = useQueryClient();
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState<OrderItem[]>(order.items as OrderItem[]);
+
   const { data: admins } = useQuery({
     queryKey: ["administrations", order.id],
     queryFn: async () => {
@@ -135,6 +138,22 @@ function OrderBlock({ order }: { order: any }) {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["administrations", order.id] }),
   });
 
+  const saveEdits = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.from("medical_orders").update({
+        items: draft,
+      } as any).eq("id", order.id).select("id").single();
+      if (error) throw error;
+      if (!data) throw new Error("No se pudo actualizar la orden. Verifica tus permisos.");
+    },
+    onSuccess: () => {
+      toast.success("Orden actualizada");
+      setEditing(false);
+      qc.invalidateQueries({ queryKey: ["orders", order.admission_id] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   const review = useMutation({
     mutationFn: async () => {
       const { data, error } = await supabase.from("medical_orders").update({
@@ -150,23 +169,42 @@ function OrderBlock({ order }: { order: any }) {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const toggleOmit = (idx: number) => setDraft(draft.map((it, i) => i === idx ? { ...it, omitted: !it.omitted } : it));
+
   return (
     <div className="bg-card border rounded-xl p-4">
       <div className="flex justify-between items-start mb-3 flex-wrap gap-2">
         <p className="text-xs text-muted-foreground">{fmtDateTime(order.order_at)}</p>
-        <span className="status-pill" data-tone={order.record_status === "confirmado" ? "confirmed" : "pending"}>
-          {order.record_status === "confirmado" ? "Confirmado" : "Pendiente"}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="status-pill" data-tone={order.record_status === "confirmado" ? "confirmed" : "pending"}>
+            {order.record_status === "confirmado" ? "Confirmado" : "Pendiente"}
+          </span>
+          {auth.isMedical && !editing && (
+            <Button size="sm" variant="ghost" onClick={() => { setDraft(order.items as OrderItem[]); setEditing(true); }}>
+              <Pencil className="w-3.5 h-3.5 mr-1" /> Editar
+            </Button>
+          )}
+        </div>
       </div>
       <ol className="space-y-2 text-sm">
-        {(order.items as OrderItem[]).map((it, idx) => {
+        {draft.map((it, idx) => {
           const itemAdmins = (admins ?? []).filter(a => a.item_index === idx);
+          const isOmitted = !!it.omitted;
           return (
             <li key={idx} className="flex gap-2">
-              <span className="font-semibold w-5">{it.n}.</span>
+              <span className={`font-semibold w-5 ${isOmitted ? "line-through text-muted-foreground" : ""}`}>{it.n}.</span>
               <div className="flex-1">
-                <p>{it.text}</p>
-                {itemAdmins.length > 0 && (
+                <p className={isOmitted ? "line-through text-muted-foreground" : ""}>
+                  {it.text}
+                  {isOmitted && <span className="ml-2 text-[10px] uppercase tracking-wide text-destructive">Omitida</span>}
+                </p>
+                {editing && (
+                  <label className="text-xs inline-flex items-center gap-1 mt-1 cursor-pointer">
+                    <input type="checkbox" checked={isOmitted} onChange={() => toggleOmit(idx)} />
+                    Omitir esta indicación
+                  </label>
+                )}
+                {!isOmitted && itemAdmins.length > 0 && (
                   <div className="mt-1 flex flex-wrap gap-1">
                     {itemAdmins.map(a => (
                       <button key={a.id} disabled={!!a.administered_at || !(auth.isNurse || auth.isMedical)}
@@ -184,7 +222,17 @@ function OrderBlock({ order }: { order: any }) {
           );
         })}
       </ol>
-      {auth.canReview && order.record_status === "pendiente_revision" && (
+      {editing && (
+        <div className="mt-3 flex justify-end gap-2">
+          <Button size="sm" variant="ghost" onClick={() => { setDraft(order.items as OrderItem[]); setEditing(false); }}>
+            Cancelar
+          </Button>
+          <Button size="sm" onClick={() => saveEdits.mutate()} disabled={saveEdits.isPending}>
+            Guardar cambios
+          </Button>
+        </div>
+      )}
+      {!editing && auth.canReview && order.record_status === "pendiente_revision" && (
         <div className="mt-3 flex justify-end">
           <Button size="sm" variant="outline" onClick={() => review.mutate()} disabled={review.isPending}>
             <CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Confirmar
@@ -201,3 +249,4 @@ function OrderBlock({ order }: { order: any }) {
     </div>
   );
 }
+
