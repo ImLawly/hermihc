@@ -25,7 +25,10 @@ export function ShareTempLink({ patientId, admissionId }: { patientId: string; a
   const m = useMutation({
     mutationFn: () => fn({ data: { patientId, admissionId: admissionId ?? null, hours, note: note || undefined } }),
     onSuccess: (r) => {
-      const url = `${window.location.origin}/v/${r.token}`;
+      const origin = window.location.hostname.endsWith("lovable.app")
+        ? window.location.origin
+        : "https://hermihc.lovable.app";
+      const url = `${origin}/v/${r.token}`;
       setGenerated(url);
       navigator.clipboard.writeText(url).catch(() => {});
       toast.success("Link generado y copiado");
