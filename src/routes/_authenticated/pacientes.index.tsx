@@ -16,6 +16,37 @@ export const Route = createFileRoute("/_authenticated/pacientes/")({
 
 type Tab = "activa" | "archivada";
 
+type DateConstraint = { years: number[]; nums: number[] };
+
+function parseDateQuery(s: string): DateConstraint | null {
+  const tokens = s.match(/\d+/g);
+  if (!tokens) return null;
+  const years: number[] = [];
+  const nums: number[] = [];
+  for (const t of tokens) {
+    const n = Number(t);
+    if (t.length === 4 && n >= 1900 && n <= 2100) years.push(n);
+    else if (t.length <= 2 && n >= 1 && n <= 31) nums.push(n);
+    else return null;
+  }
+  if (years.length === 0 && nums.length === 0) return null;
+  return { years, nums };
+}
+
+function matchesDate(iso: string, c: DateConstraint): boolean {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return false;
+  const y = d.getFullYear(), m = d.getMonth() + 1, day = d.getDate();
+  if (c.years.length && !c.years.includes(y)) return false;
+  // Every number must match either the month or the day (either interpretation)
+  for (const n of c.nums) {
+    if (n !== m && n !== day) return false;
+  }
+  return true;
+}
+
+
+
 function PacientesIndex() {
   const auth = useAuth();
   const [tab, setTab] = useState<Tab>("activa");
@@ -25,7 +56,11 @@ function PacientesIndex() {
   const { data: patients, isLoading } = useQuery({
     queryKey: ["patients", tab, loc],
     queryFn: async () => {
-      let query = supabase.from("patients").select("*").eq("status", tab).order("updated_at", { ascending: false });
+      let query = supabase
+        .from("patients")
+        .select("*, admissions(admission_date)")
+        .eq("status", tab)
+        .order("updated_at", { ascending: false });
       if (loc !== "all") query = query.eq("current_location", loc);
       const { data, error } = await query;
       if (error) throw error;
@@ -37,12 +72,19 @@ function PacientesIndex() {
   const filtered = useMemo(() => {
     if (!patients) return [];
     if (!q.trim()) return patients;
-    const s = q.toLowerCase();
-    return patients.filter(p =>
-      `${p.nombres} ${p.apellidos}`.toLowerCase().includes(s) ||
-      p.cedula_number.includes(s)
-    );
+    const s = q.toLowerCase().trim();
+    const dateConstraint = parseDateQuery(s);
+    return patients.filter((p: any) => {
+      if (`${p.nombres} ${p.apellidos}`.toLowerCase().includes(s)) return true;
+      if (p.cedula_number.includes(s)) return true;
+      if (dateConstraint) {
+        const dates: string[] = (p.admissions ?? []).map((a: any) => a.admission_date).filter(Boolean);
+        if (dates.some(d => matchesDate(d, dateConstraint))) return true;
+      }
+      return false;
+    });
   }, [patients, q]);
+
 
   return (
     <div>
@@ -69,7 +111,7 @@ function PacientesIndex() {
       <div className="flex flex-wrap gap-2 mb-4 items-center">
         <div className="relative flex-1 min-w-[200px]">
           <Search className="w-4 h-4 absolute left-2.5 top-2.5 text-muted-foreground" />
-          <Input className="pl-8" placeholder="Buscar por nombre o cédula" value={q} onChange={e => setQ(e.target.value)} />
+          <Input className="pl-8" placeholder="Buscar por nombre, cédula o fecha de ingreso (ej: 2024, 03/2024, 15/03)" value={q} onChange={e => setQ(e.target.value)} />
         </div>
         <select className="h-9 rounded-md border border-input bg-background px-2 text-sm"
           value={loc} onChange={e => setLoc(e.target.value as typeof loc)}>
