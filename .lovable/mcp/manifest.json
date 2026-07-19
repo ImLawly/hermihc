@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "sdk_version": "0.23.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://ngsqnfrkjfnmcaqekixn.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "historias-clinicas-mcp",
+      "version": "0.1.0",
+      "title": "Historias Clínicas — MCP"
+    },
+    "tools": [
+      {
+        "name": "get_my_profile",
+        "title": "Obtener mi perfil",
+        "description": "Devuelve el perfil, los roles y los servicios clínicos asignados al usuario autenticado.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_recent_patients",
+        "title": "Listar pacientes recientes",
+        "description": "Lista pacientes recientes visibles para el usuario (según sus servicios asignados y RLS). Devuelve identificación básica, ubicación actual y estado.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "description": "Número máximo de pacientes a devolver (por defecto 20)."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_my_notifications",
+        "title": "Listar mis notificaciones",
+        "description": "Devuelve notificaciones recientes dirigidas al usuario (por rol, servicio o ID). Filtrado por RLS.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "only_unread": {
+              "type": "boolean",
+              "description": "Si es true, solo devuelve las no leídas."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "description": "Máximo de notificaciones (por defecto 20)."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}

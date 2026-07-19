@@ -24,8 +24,12 @@ export default defineTool({
     if (!ctx.isAuthenticated()) {
       return { content: [{ type: "text", text: "No autenticado" }], isError: true };
     }
-    const supabase = supabaseForUser(ctx.getToken());
+    const token = ctx.getToken();
     const userId = ctx.getUserId();
+    if (!token || !userId) {
+      return { content: [{ type: "text", text: "Sesión inválida" }], isError: true };
+    }
+    const supabase = supabaseForUser(token);
     const [{ data: profile, error: pErr }, { data: roles, error: rErr }] = await Promise.all([
       supabase.from("profiles").select("id, full_name, cedula, approved").eq("id", userId).maybeSingle(),
       supabase.from("user_roles").select("role, service").eq("user_id", userId),
