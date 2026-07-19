@@ -11,15 +11,20 @@ import { toast } from "sonner";
 import { Plus } from "lucide-react";
 import { AuthorStamp } from "@/components/AuthorStamp";
 
-export function Tab6Notas({ admission }: { admission: any }) {
-  const [section, setSection] = useState<"parto" | "operatoria" | "notas">("parto");
+export function Tab6Notas({ admission, patient }: { admission: any; patient?: any }) {
+  const isObstetric = admission?.service === "obstetricia";
+  const [section, setSection] = useState<"parto" | "operatoria" | "notas" | "recien_nacido">(isObstetric ? "recien_nacido" : "parto");
   return (
     <div className="space-y-3">
       <div className="flex gap-2 overflow-x-auto pb-1">
+        {isObstetric && (
+          <button className="med-tab" data-active={section === "recien_nacido"} onClick={() => setSection("recien_nacido")}>Recién nacido</button>
+        )}
         <button className="med-tab" data-active={section === "parto"} onClick={() => setSection("parto")}>Nota de parto</button>
         <button className="med-tab" data-active={section === "operatoria"} onClick={() => setSection("operatoria")}>Nota operatoria</button>
         <button className="med-tab" data-active={section === "notas"} onClick={() => setSection("notas")}>Notas médicas / Enfermería</button>
       </div>
+      {section === "recien_nacido" && isObstetric && patient && <NewbornPanel admission={admission} patient={patient} />}
       {section === "parto" && <DeliverySection admission={admission} />}
       {section === "operatoria" && <OperativeSection admission={admission} />}
       {section === "notas" && <NotesSection admission={admission} />}
