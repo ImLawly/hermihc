@@ -24,6 +24,28 @@ export const createTempLink = createServerFn({ method: "POST" })
   )
   .handler(async ({ context, data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    // Server-side authz: caller must be superuser OR medical staff with
+    // service access to the target patient's current service.
+    const SUPER = "783e43b7-b112-4aba-bef4-e3f3e224e306";
+    if (context.userId !== SUPER) {
+      const { data: patient, error: pErr } = await supabaseAdmin
+        .from("patients")
+        .select("service")
+        .eq("id", data.patientId)
+        .maybeSingle();
+      if (pErr) throw new Error(pErr.message);
+      if (!patient) throw new Error("Paciente no encontrado");
+      const [{ data: isStaff }, { data: hasAccess }] = await Promise.all([
+        supabaseAdmin.rpc("is_medical_staff", { _user_id: context.userId }),
+        supabaseAdmin.rpc("has_service_access", {
+          _user_id: context.userId,
+          _service: patient.service,
+        }),
+      ]);
+      if (!isStaff || !hasAccess) throw new Error("Acceso denegado");
+    }
+
     const token = randomToken(28);
     const expires_at = new Date(Date.now() + data.hours * 3600_000).toISOString();
     const { error } = await supabaseAdmin.from("temporary_access_tokens").insert({
@@ -37,6 +59,7 @@ export const createTempLink = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { token, expires_at };
   });
+
 
 export const listMyTempLinks = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
