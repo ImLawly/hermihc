@@ -16,6 +16,37 @@ export const Route = createFileRoute("/_authenticated/pacientes/")({
 
 type Tab = "activa" | "archivada";
 
+type DateConstraint = { years: number[]; nums: number[] };
+
+function parseDateQuery(s: string): DateConstraint | null {
+  const tokens = s.match(/\d+/g);
+  if (!tokens) return null;
+  const years: number[] = [];
+  const nums: number[] = [];
+  for (const t of tokens) {
+    const n = Number(t);
+    if (t.length === 4 && n >= 1900 && n <= 2100) years.push(n);
+    else if (t.length <= 2 && n >= 1 && n <= 31) nums.push(n);
+    else return null;
+  }
+  if (years.length === 0 && nums.length === 0) return null;
+  return { years, nums };
+}
+
+function matchesDate(iso: string, c: DateConstraint): boolean {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return false;
+  const y = d.getFullYear(), m = d.getMonth() + 1, day = d.getDate();
+  if (c.years.length && !c.years.includes(y)) return false;
+  // Every number must match either the month or the day (either interpretation)
+  for (const n of c.nums) {
+    if (n !== m && n !== day) return false;
+  }
+  return true;
+}
+
+
+
 function PacientesIndex() {
   const auth = useAuth();
   const [tab, setTab] = useState<Tab>("activa");
