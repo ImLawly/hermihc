@@ -1,5 +1,5 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { resolveLoginEmail } from "@/lib/auth.functions";
@@ -10,16 +10,44 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Stethoscope } from "lucide-react";
 
+const NEXT_STORAGE_KEY = "post_login_next";
+
+function safeRelative(next: string | undefined): string | null {
+  if (!next) return null;
+  if (!next.startsWith("/") || next.startsWith("//")) return null;
+  return next;
+}
+
 export const Route = createFileRoute("/login")({
   head: () => ({ meta: [{ title: "Iniciar sesión — Historias Clínicas" }] }),
+  validateSearch: (s: Record<string, unknown>) => ({
+    next: typeof s.next === "string" ? s.next : undefined,
+  }),
   component: LoginPage,
 });
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { next } = useSearch({ from: "/login" });
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const target = safeRelative(next) ?? "/pacientes";
+
+  // If we return here already signed in (e.g. after Google OAuth), forward to the
+  // preserved destination (sessionStorage takes precedence for social flows).
+  useEffect(() => {
+    let cancelled = false;
+    supabase.auth.getSession().then(({ data }) => {
+      if (cancelled || !data.session) return;
+      const stored = typeof window !== "undefined" ? sessionStorage.getItem(NEXT_STORAGE_KEY) : null;
+      const dest = safeRelative(stored ?? undefined) ?? target;
+      if (stored) sessionStorage.removeItem(NEXT_STORAGE_KEY);
+      window.location.href = dest;
+    });
+    return () => { cancelled = true; };
+  }, [target]);
 
   const handleEmail = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,11 +63,19 @@ function LoginPage() {
     setLoading(false);
     if (error) { toast.error(error.message); return; }
     toast.success("Sesión iniciada");
-    navigate({ to: "/pacientes" });
+    // Use full navigation for OAuth consent URL (dots in path aren't in the typed route tree).
+    if (target.startsWith("/.lovable/")) {
+      window.location.href = target;
+    } else {
+      navigate({ to: target });
+    }
   };
 
-
   const handleGoogle = async () => {
+    // Preserve the intended destination across the Google round-trip.
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem(NEXT_STORAGE_KEY, target);
+    }
     const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
     if (result.error) toast.error("No se pudo iniciar sesión con Google");
   };
@@ -84,7 +120,7 @@ function LoginPage() {
           </Button>
 
           <p className="text-xs text-center mt-5 text-muted-foreground">
-            ¿No tienes cuenta? <Link to="/signup" className="text-primary font-medium">Regístrate</Link>
+            ¿No tienes cuenta? <Link to="/signup" search={next ? { next } as never : undefined}>Regístrate</Link>
           </p>
         </div>
       </div>
