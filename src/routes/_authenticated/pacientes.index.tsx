@@ -25,7 +25,11 @@ function PacientesIndex() {
   const { data: patients, isLoading } = useQuery({
     queryKey: ["patients", tab, loc],
     queryFn: async () => {
-      let query = supabase.from("patients").select("*").eq("status", tab).order("updated_at", { ascending: false });
+      let query = supabase
+        .from("patients")
+        .select("*, admissions(admission_date)")
+        .eq("status", tab)
+        .order("updated_at", { ascending: false });
       if (loc !== "all") query = query.eq("current_location", loc);
       const { data, error } = await query;
       if (error) throw error;
@@ -37,12 +41,19 @@ function PacientesIndex() {
   const filtered = useMemo(() => {
     if (!patients) return [];
     if (!q.trim()) return patients;
-    const s = q.toLowerCase();
-    return patients.filter(p =>
-      `${p.nombres} ${p.apellidos}`.toLowerCase().includes(s) ||
-      p.cedula_number.includes(s)
-    );
+    const s = q.toLowerCase().trim();
+    const dateConstraint = parseDateQuery(s);
+    return patients.filter((p: any) => {
+      if (`${p.nombres} ${p.apellidos}`.toLowerCase().includes(s)) return true;
+      if (p.cedula_number.includes(s)) return true;
+      if (dateConstraint) {
+        const dates: string[] = (p.admissions ?? []).map((a: any) => a.admission_date).filter(Boolean);
+        if (dates.some(d => matchesDate(d, dateConstraint))) return true;
+      }
+      return false;
+    });
   }, [patients, q]);
+
 
   return (
     <div>
