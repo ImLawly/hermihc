@@ -89,7 +89,7 @@ function LoginPage() {
           </div>
           <div>
             <h1 className="text-lg font-semibold">Historias Clínicas</h1>
-            <p className="text-xs text-muted-foreground">Servicio de Obstetricia</p>
+            <p className="text-xs text-muted-foreground whitespace-pre-wrap">{"\n"}</p>
           </div>
         </div>
 
